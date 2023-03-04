@@ -216,6 +216,50 @@ bool ray_cylinder_intersection(
 	vec3 intersection_point;
 	t = MAX_RANGE + 10.;
 
+	// check if ray and cylinder are parallel
+	if (dot(ray_direction, cyl.axis) == 0.) {
+		return false;
+	}
+
+	vec3 C = ray_origin - cyl.center;
+    vec3 D = ray_direction - dot(ray_direction, cyl.axis) * cyl.axis;
+
+	
+    float a = dot(D, D);
+    float b = 2.0 * dot(D, C - dot(C, cyl.axis) * cyl.axis);
+    float c = dot(C - dot(C, cyl.axis) * cyl.axis, C - dot(C, cyl.axis) * cyl.axis) - cyl.radius * cyl.radius;
+
+
+	vec2 solutions; // solutions will be stored here
+
+	int num_solutions = solve_quadratic(a,b,c,solutions);
+
+	if (num_solutions >= 1 && solutions[0] > 0.) {
+		t = solutions[0];
+	}
+
+	if (num_solutions >= 2 && solutions[1] > 0. && solutions[1] < t) {
+		t = solutions[1];
+	}
+
+	if (t < MAX_RANGE+10.) {
+		intersection_point = ray_origin + t * ray_direction;
+
+		// Compute the distance of the intersection point from the cylinder center along the axis direction
+		float distance_along_axis = dot(intersection_point - cyl.center, cyl.axis);
+
+		// Check if the intersection point is within the cylinder height
+		if (abs(distance_along_axis) > 0.5 * cyl.height) {
+			t = -1.0;
+			return false;
+		}
+
+		// Compute the normal at the intersection point
+		normal = normalize(intersection_point - cyl.center - distance_along_axis * cyl.axis);
+
+		return true;
+
+	} 
 	return false;
 }
 
