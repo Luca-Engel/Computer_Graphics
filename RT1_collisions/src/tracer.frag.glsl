@@ -213,7 +213,8 @@ bool ray_cylinder_intersection(
 	- return whether there is an intersection with t > 0
 	*/
 
-	vec3 intersection_point;
+	vec3 intersection_point1;
+	vec3 intersection_point2;
 	t = MAX_RANGE + 10.;
 
 	// check if ray and cylinder are parallel
@@ -233,33 +234,52 @@ bool ray_cylinder_intersection(
 	vec2 solutions; // solutions will be stored here
 
 	int num_solutions = solve_quadratic(a,b,c,solutions);
+	bool hasTwoSol = false;
+
+	float t1 = MAX_RANGE + 10.;
+	float t2 = MAX_RANGE + 10.;
 
 	if (num_solutions >= 1 && solutions[0] > 0.) {
-		t = solutions[0];
+		t1 = solutions[0];
 	}
 
-	if (num_solutions >= 2 && solutions[1] > 0. && solutions[1] < t) {
-		t = solutions[1];
+	if (num_solutions >= 2 && solutions[1] > 0. ) {//&& solutions[1] < t) {
+		t2 = solutions[1];
+		hasTwoSol = true;
 	}
 
-	if (t < MAX_RANGE+10.) {
-		intersection_point = ray_origin + t * ray_direction;
+	if (t1 < MAX_RANGE+10. || t2 < MAX_RANGE+10.) {
 
-		// Compute the distance of the intersection point from the cylinder center along the axis direction
-		float distance_along_axis = dot(intersection_point - cyl.center, cyl.axis);
+		// Front part of the cylinder
+		if (hasTwoSol) {
+			// Compute the distance of the intersection point 2 from the cylinder center along the axis direction
+			intersection_point2 = ray_origin + t2 * ray_direction;
+			float distance_along_axis2 = dot(intersection_point2 - cyl.center, cyl.axis);	
 
-		// Check if the intersection point is within the cylinder height
-		if (abs(distance_along_axis) > 0.5 * cyl.height) {
+			// Check if intersection of point two in bounds:
+			if (hasTwoSol && abs(distance_along_axis2) < 0.5 * cyl.height) {
+				normal = normalize(intersection_point2 - cyl.center - distance_along_axis2 * cyl.axis);
+				t = t2;
+				return t > 0.0;
+			}		
+		}
+
+		// Back part of the cylinder:
+		// Compute the distance of the intersection point 1 from the cylinder center along the axis direction
+		intersection_point1 = ray_origin + t1 * ray_direction;
+		float distance_along_axis1 = dot(intersection_point1 - cyl.center, cyl.axis);		
+
+		// Check if intersection of point one out of bounds:
+		if (abs(distance_along_axis1) > 0.5 * cyl.height) {
 			t = -1.0;
 			return false;
 		}
 
-		// Compute the normal at the intersection point
-		normal = normalize(intersection_point - cyl.center - distance_along_axis * cyl.axis);
-
-		return true;
-
+		normal = normalize(intersection_point1 - cyl.center - distance_along_axis1 * cyl.axis);
+		t = t1;
+		return t > 0.0;
 	} 
+
 	return false;
 }
 
