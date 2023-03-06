@@ -250,7 +250,7 @@ bool ray_cylinder_intersection(
 
 	if (t1 < MAX_RANGE+10. || t2 < MAX_RANGE+10.) {
 
-		// Front part of the cylinder
+		// One half of the cylinder
 		if (hasTwoSol) {
 			// Compute the distance of the intersection point 2 from the cylinder center along the axis direction
 			intersection_point2 = ray_origin + t2 * ray_direction;
@@ -264,7 +264,7 @@ bool ray_cylinder_intersection(
 			}		
 		}
 
-		// Back part of the cylinder:
+		// Other half of the cylinder:
 		// Compute the distance of the intersection point 1 from the cylinder center along the axis direction
 		intersection_point1 = ray_origin + t1 * ray_direction;
 		float distance_along_axis1 = dot(intersection_point1 - cyl.center, cyl.axis);		
