@@ -1,8 +1,12 @@
 Ray-plane intersection: RT1.1
 - Approach:
     The approach for the ray-plane intersection was straightforward : we just checked first if the ray-direction and the plane-normal
-    vectors were perpendicular, if yes then there is no intersection, as the plane and ray are parallel in that case. Then all we had to do was to find t such that
-    dot(plane_normal, ray_origin) + t * dot(plane_normal, ray_direction) - plane_offset = 0. If we find such t, it means we have a
+    vectors were perpendicular, if yes then there is no intersection, as the plane and ray are parallel in that case. 
+    
+    If that is not the case, we search for a point on our ray that is inside the plane (i.e., for which the implicit plane funciton holds)
+    if that point is p, we can define p as: p = ray_origin + t * ray_direction
+    To find p, we need to find a t such that
+    dot(plane_normal, ray_origin) + t * dot(plane_normal, ray_direction) - plane_offset = 0. Once we have find such a t, it means we have a
     point x that intersects on the plane.
 
 - Problems:
