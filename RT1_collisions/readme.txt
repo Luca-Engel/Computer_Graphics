@@ -15,13 +15,17 @@ Ray-plane intersection: RT1.1
 
 Ray-cylinder intersection theory: RT1.2.1
 - Approach:
-    The approach for the ray-cylinder intersection required a lot of work : first, obviously we had to draw the situation we were
+    The approach for the ray-cylinder intersection required a lot of work : first, we had to draw the situation we were
     working on so we would have a better idea of how to find the implicit equation for the cylinder. So we tried to draw it from the
-    front view of the cylinder but at some point we were stuck. Then, we thought of drawing the situation from a different angle : the
-    top view of the cylinder and it became pretty easy to find the implicit equation of the cylinder. We came up with a quadratic
-    equation we had to solve for t. So we can have a maximum of 2 solutions (points of intersection) for our equation (one for the
-    front part of the cylinder and the other one for the back part of the cylinder). Finally, we need to check if the solutions
-    are actually within the height of the cylinder, if not then those solutions are not points of intersection and we have no solution.
+    front view and use the pythagoreon theorem using the knowledge of the cylinder radius and the hypothetical intersection 
+    point (p = ray_origin + t * ray_direction) with the cylinder but at some point we were stuck since we couldn't manage to solve for t. 
+    Then, we thought of drawing the situation from a different angle : the
+    top view of the cylinder and it became easier to find the implicit equation of the cylinder. We came up with a quadratic
+    equation we had to solve for t. So we can have a maximum of 2 solutions (the t's leading to the points of intersection) 
+    for our equation (one for the front part of the cylinder and the other one for the back part of the cylinder). 
+    Finally, we need to check if the solutions are actually within the height of the cylinder, 
+    if not then those solutions are not points of intersection and we have no solution. If both points are in bounds of the cylinder, 
+    then we only consider the one visible (i.e. in the front half of the cylinder) and not the other one.
 
 - Problems:
     First we tried to find the implicit equation for a cylinder by using the Pythagore theorem but it ended up with a very complex
