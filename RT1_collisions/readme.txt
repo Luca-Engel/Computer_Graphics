@@ -32,13 +32,14 @@ Ray-cylinder intersection theory: RT1.2.1
     equation we had to simplify in order to isolate t. So we had to try something else and eventually we came up with the good approach.
     When we found the good approach the difficulty was to think of changing the view we were working on : going from the front view of
     the cylinder to his top view which helped us a lot in order to find the right equation for the ray-cylinder intersection.
+    To be able to switch to the top view, we had to get rid of the vertical components so that the components would have the right proportions.
 
 Ray-cylinder intersection implementation: RT1.2.2
 - Approach:
     We just followed what we did on the theory part and we followed the hints of the assignment : we checked if the ray direction and
     the cylinder axis are parallel, if that's the case then there is no intersection between the cylinder and the ray.
-    Then we compute the values we found on RT1.2.1, we then solve the quadratic equation, find t and the number of solutions we have
-    and we then check if those solutions are actually intersection points (i.e. if they are within the cylinder)
+    Then we computed the values we found on RT1.2.1. We then solved the quadratic equation, find t and the number of solutions we have
+    and we then check if those solutions are actually intersection points (i.e. if they are within the cylinders bounds)
 
 
 - Problems:
@@ -47,7 +48,7 @@ Ray-cylinder intersection implementation: RT1.2.2
 
 
 Total workload:
-- Lucas Engel:
-- Ahmad Jarrar:
+- Lucas Engel:0.32
+- Ahmad Jarrar: 0.4
 - Antoine Garin: 0.28
 
