@@ -391,20 +391,22 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 	#if SHADING_MODE == SHADING_MODE_PHONG
 		if(dot(r, direction_to_camera) >= 0.0) {
 			specularComponent = light.color * mat.specular * mat.color 
-					// * pow(dot(r, direction_to_camera), mat.shininess);
-					* dot(r, direction_to_camera);
+					* pow(dot(r, direction_to_camera), mat.shininess);
+					// * dot(r, direction_to_camera);
 		}
 	#endif
 
 	#if SHADING_MODE == SHADING_MODE_BLINN_PHONG
-		specularComponent = light.color * mat.specular * mat.color 
+		if (dot(object_normal, h) >= 0.) {
+			specularComponent = light.color * mat.specular * mat.color 
 				* pow(dot(object_normal, h), mat.shininess);
+		}
+		
 	#endif
 
 	if (isLightOnCorrectSide && !isInShadow) {
 		return specularComponent + diffuseComponent;
 	}
-	
 	return vec3(0.);
 }
 
@@ -456,8 +458,8 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 	vec3 reflected_direction = ray_direction;
 	vec3 alpha_prod = vec3(1.);
 
-	for (int num_reflect = 0; num_reflect < NUM_REFLECTIONS, num_reflect++) {
-		
+
+	for (int num_reflect = 0; num_reflect < NUM_REFLECTIONS +1; num_reflect++) {
 		if(ray_intersection(reflected_origin, reflected_direction, col_distance, col_normal, mat_id)) {
 			Material m = get_material(mat_id);
 			// pix_color = m.color;
@@ -472,8 +474,10 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 				pix_color += lighting(object_point, col_normal, -ray_direction, light, m);
 			}
 			#endif
-			total_color += (1. - mat.mirror) * pix_color * alpha_prod;
-			alpha_prod *= mat.mirror;
+			total_color += (1. - m.mirror) * pix_color * alpha_prod;
+			alpha_prod *= m.mirror;
+			reflected_origin = object_point + 0.001 * col_normal;
+			reflected_direction = reflect(reflected_direction, col_normal);
 		}
 	}
 	
