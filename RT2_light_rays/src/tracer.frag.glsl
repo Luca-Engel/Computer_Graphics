@@ -373,10 +373,14 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 	- check whether it intersects an object from the scene
 	- update the lighting accordingly
 	*/	
-	float distance;
+	float collisionDistance;
 	vec3 normal;
 	int material_id;
-	bool isInShadow = ray_intersection(object_point + 0.001 * l, l, distance, normal, material_id);
+	bool isInShadow = ray_intersection(object_point + 0.001 * l, l, collisionDistance, normal, material_id);
+
+	if (collisionDistance > length(light.position - object_point)) {
+		isInShadow = false;
+	}
 
 	if (dot(object_normal, l) < 0.) {
 		return vec3(0.);
