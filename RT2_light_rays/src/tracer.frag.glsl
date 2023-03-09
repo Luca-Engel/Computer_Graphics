@@ -385,24 +385,7 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 	- shoot a shadow ray from the intersection point to the light
 	- check whether it intersects an object from the scene
 	- update the lighting accordingly
-	*/
-
-	// struct Material {
-	// 	vec3 color;
-	// 	float ambient;
-	// 	float diffuse;
-	// 	float specular;
-	// 	float shininess;
-	// 	float mirror;
-	// };
-
-	// struct Light {
-	// 	vec3 color;
-	// 	vec3 position;
-	// };
-	
-
-	
+	*/	
 
 
 
@@ -427,7 +410,6 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 	- if it does, compute the ambient contribution to the total intensity
 	- compute the intensity contribution from each light in the scene and store the sum in pix_color
 	*/
-	
 
 	/** #TODO RT2.3.2: 
 	- create an outer loop on the number of reflections (see below for a suggested structure)
@@ -465,9 +447,18 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 		pix_color = m.color;
 
 		#if NUM_LIGHTS != 0
-		// for(int i_light = 0; i_light < NUM_LIGHTS; i_light++) {
-		// // do something for each light lights[i_light]
-		// }
+		for(int i_light = 0; i_light < NUM_LIGHTS; i_light++) {
+			// do something for each light lights[i_light]
+			Light light = lights[i_light];
+			
+			pix_color += light_color_ambient * m.ambient * m.color;
+
+// 			struct Light {
+		// 	vec3 color;
+		// 	vec3 position;
+		// };
+
+		}
 		#endif
 	}
 
