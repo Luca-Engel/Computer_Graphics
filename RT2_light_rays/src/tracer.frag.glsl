@@ -446,29 +446,39 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 	*/
 
 	vec3 pix_color = vec3(0.);
+	vec3 total_color = vec3(0.);
 
 	float col_distance;
 	vec3 col_normal = vec3(0.);
 	int mat_id = 0;
-	if(ray_intersection(ray_origin, ray_direction, col_distance, col_normal, mat_id)) {
-		Material m = get_material(mat_id);
-		// pix_color = m.color;
 
-		pix_color = m.ambient * m.color * light_color_ambient;
+	vec3 reflected_origin = ray_origin;
+	vec3 reflected_direction = ray_direction;
+	vec3 alpha_prod = vec3(1.);
 
-		#if NUM_LIGHTS != 0
-		for(int i_light = 0; i_light < NUM_LIGHTS; i_light++) {
-			// do something for each light lights[i_light]
-			Light light = lights[i_light];
-			
-			vec3 object_point = col_distance * ray_direction + ray_origin;
-			
-			pix_color += lighting(object_point, col_normal, -ray_direction, light, m);
+	for (int num_reflect = 0; num_reflect < NUM_REFLECTIONS, num_reflect++) {
+		
+		if(ray_intersection(reflected_origin, reflected_direction, col_distance, col_normal, mat_id)) {
+			Material m = get_material(mat_id);
+			// pix_color = m.color;
+			vec3 object_point = col_distance * reflected_direction + reflected_origin;
+			pix_color = m.ambient * m.color * light_color_ambient;
+
+			#if NUM_LIGHTS != 0
+			for(int i_light = 0; i_light < NUM_LIGHTS; i_light++) {
+				// do something for each light lights[i_light]
+				Light light = lights[i_light];
+
+				pix_color += lighting(object_point, col_normal, -ray_direction, light, m);
+			}
+			#endif
+			total_color += (1. - mat.mirror) * pix_color * alpha_prod;
+			alpha_prod *= mat.mirror;
 		}
-		#endif
 	}
+	
 
-	return pix_color;
+	return total_color;
 }
 
 
