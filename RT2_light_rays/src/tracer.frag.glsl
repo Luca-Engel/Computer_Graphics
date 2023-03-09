@@ -349,9 +349,7 @@ bool ray_intersection(
 	Return the color at an intersection point given a light and a material, exluding the contribution
 	of potential reflected rays.
 */
-vec3 lighting(
-		vec3 object_point, vec3 object_normal, vec3 direction_to_camera, 
-		Light light, Material mat) {
+vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, Light light, Material mat) {
 
 	/** #TODO RT2.1: 
 	- compute the diffuse component
@@ -362,6 +360,26 @@ vec3 lighting(
 
 	You can use existing methods for `vec3` objects such as `mirror`, `reflect`, `norm`, `dot`, and `normalize`.
 	*/
+	float m_a = mat.ambient;
+	float m_d = mat.diffuse;
+	float m_s = mat.shininess;
+	vec3 l = (- object_point + light.position);
+	vec3 vPlusL = direction_to_camera + l;
+	vec3 i_l = light.color;
+	vec3 i_a = mat.color;
+	vec3 r = reflect(-l, object_normal);
+	
+
+	vec3 h = vPlusL / sqrt(dot(vPlusL, vPlusL));
+
+
+	float diffuseComponent = m_d * dot(object_normal, l);
+	float specularComponent = m_s * dot(object_normal, h);
+
+	bool isLightOnCorrectSide = dot(object_normal, l) > 0.;
+	bool isReflectionAimedAtCamera = r == l;
+
+
 
 	/** #TODO RT2.2: 
 	- shoot a shadow ray from the intersection point to the light
@@ -369,8 +387,28 @@ vec3 lighting(
 	- update the lighting accordingly
 	*/
 
+	// struct Material {
+	// 	vec3 color;
+	// 	float ambient;
+	// 	float diffuse;
+	// 	float specular;
+	// 	float shininess;
+	// 	float mirror;
+	// };
+
+	// struct Light {
+	// 	vec3 color;
+	// 	vec3 position;
+	// };
+	
+
+	
+
+
 
 	#if SHADING_MODE == SHADING_MODE_PHONG
+
+		
 	#endif
 
 	#if SHADING_MODE == SHADING_MODE_BLINN_PHONG
@@ -389,6 +427,7 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 	- if it does, compute the ambient contribution to the total intensity
 	- compute the intensity contribution from each light in the scene and store the sum in pix_color
 	*/
+	
 
 	/** #TODO RT2.3.2: 
 	- create an outer loop on the number of reflections (see below for a suggested structure)
