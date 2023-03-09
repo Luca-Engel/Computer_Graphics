@@ -360,25 +360,17 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 
 	You can use existing methods for `vec3` objects such as `mirror`, `reflect`, `norm`, `dot`, and `normalize`.
 	*/
-	float m_a = mat.ambient;
 	float m_d = mat.diffuse;
-	float m_s = mat.shininess;
-	vec3 l = (- object_point + light.position);
+	vec3 l = normalize(- object_point + light.position);
 	vec3 vPlusL = direction_to_camera + l;
-	vec3 i_l = light.color;
-	vec3 i_a = mat.color;
 	vec3 r = reflect(-l, object_normal);
 	
 
-	vec3 h = vPlusL / sqrt(dot(vPlusL, vPlusL));
+	vec3 h = normalize(vPlusL);
 
-
-	float diffuseComponent = m_d * dot(object_normal, l);
-	float specularComponent = m_s * dot(object_normal, h);
+	vec3 diffuseComponent = dot(object_normal, l) * mat.diffuse * mat.color * light.color;
 
 	bool isLightOnCorrectSide = dot(object_normal, l) > 0.;
-	bool isReflectionAimedAtCamera = r == l;
-
 
 
 	/** #TODO RT2.2: 
@@ -388,16 +380,26 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 	*/	
 
 
-
 	#if SHADING_MODE == SHADING_MODE_PHONG
+		vec3 specularComponent = light.color * (mat.specular * mat.color 
+				* pow(dot(r, direction_to_camera), mat.shininess));
 
-		
+		if (isLightOnCorrectSide) {
+			return specularComponent + diffuseComponent;
+		}
 	#endif
+
 
 	#if SHADING_MODE == SHADING_MODE_BLINN_PHONG
+		vec3 specularComponent = light.color * (mat.specular * mat.color 
+				* pow(dot(object_normal, h), mat.shininess));
+
+		if (isLightOnCorrectSide) {
+			return specularComponent + diffuseComponent;
+		}
 	#endif
 
-	return mat.color;
+	return vec3(0.);
 }
 
 /*
@@ -408,7 +410,7 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 	/** #TODO RT2.1: 
 	- check whether the ray intersects an object in the scene
 	- if it does, compute the ambient contribution to the total intensity
-	- compute the intensity contribution from each light in the scene and store the sum in pix_color
+	- compute the intensity contributionl from each light in the scene and store the sum in pix_color
 	*/
 
 	/** #TODO RT2.3.2: 
@@ -446,18 +448,16 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 		Material m = get_material(mat_id);
 		pix_color = m.color;
 
+		pix_color += m.ambient * m.color * light_color_ambient;
+
 		#if NUM_LIGHTS != 0
 		for(int i_light = 0; i_light < NUM_LIGHTS; i_light++) {
 			// do something for each light lights[i_light]
 			Light light = lights[i_light];
 			
-			pix_color += light_color_ambient * m.ambient * m.color;
-
-// 			struct Light {
-		// 	vec3 color;
-		// 	vec3 position;
-		// };
-
+			vec3 object_point = col_distance * ray_direction + ray_origin;
+			
+			pix_color += lighting(object_point, col_normal, -ray_direction, light, m);
 		}
 		#endif
 	}
