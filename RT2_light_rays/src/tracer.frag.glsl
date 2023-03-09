@@ -360,16 +360,11 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 
 	You can use existing methods for `vec3` objects such as `mirror`, `reflect`, `norm`, `dot`, and `normalize`.
 	*/
-	float m_d = mat.diffuse;
-	vec3 l = normalize(- object_point + light.position);
-	vec3 vPlusL = direction_to_camera + l;
-	vec3 r = reflect(-l, object_normal);
-	
+	vec3 l = normalize(light.position - object_point);
+	vec3 r = reflect(normalize(object_point - light.position), object_normal);
+	vec3 h = normalize(direction_to_camera + light.position - object_point);
 
-	vec3 h = normalize(vPlusL);
-
-	vec3 diffuseComponent = dot(object_normal, l) * mat.diffuse * mat.color * light.color;
-
+	// bool isLightOnCorrectSide = dot(direction_to_camera, l) > 0.;
 	bool isLightOnCorrectSide = dot(object_normal, l) > 0.;
 
 
@@ -379,26 +374,23 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 	- update the lighting accordingly
 	*/	
 
+	vec3 diffuseComponent = mat.diffuse * mat.color * light.color * dot(object_normal, l);
+	vec3 specularComponent = vec3(0.);
 
 	#if SHADING_MODE == SHADING_MODE_PHONG
-		vec3 specularComponent = light.color * (mat.specular * mat.color 
-				* pow(dot(r, direction_to_camera), mat.shininess));
-
-		if (isLightOnCorrectSide) {
-			return specularComponent + diffuseComponent;
-		}
+		specularComponent = light.color * mat.specular * mat.color 
+				* pow(dot(r, direction_to_camera), mat.shininess);
 	#endif
-
 
 	#if SHADING_MODE == SHADING_MODE_BLINN_PHONG
-		vec3 specularComponent = light.color * (mat.specular * mat.color 
-				* pow(dot(object_normal, h), mat.shininess));
-
-		if (isLightOnCorrectSide) {
-			return specularComponent + diffuseComponent;
-		}
+		specularComponent = light.color * mat.specular * mat.color 
+				* pow(dot(object_normal, h), mat.shininess);
 	#endif
 
+	if (isLightOnCorrectSide) {
+		return specularComponent + diffuseComponent;
+	}
+	
 	return vec3(0.);
 }
 
@@ -446,9 +438,9 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 	int mat_id = 0;
 	if(ray_intersection(ray_origin, ray_direction, col_distance, col_normal, mat_id)) {
 		Material m = get_material(mat_id);
-		pix_color = m.color;
+		// pix_color = m.color;
 
-		pix_color += m.ambient * m.color * light_color_ambient;
+		pix_color = m.ambient * m.color * light_color_ambient;
 
 		#if NUM_LIGHTS != 0
 		for(int i_light = 0; i_light < NUM_LIGHTS; i_light++) {
