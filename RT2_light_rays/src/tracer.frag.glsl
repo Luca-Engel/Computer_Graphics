@@ -373,6 +373,10 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 	- check whether it intersects an object from the scene
 	- update the lighting accordingly
 	*/	
+	float distance;
+	vec3 normal;
+	int material_id;
+	bool isInShadow = ray_intersection(object_point + 0.001 * l, l, distance, normal, material_id);
 
 	vec3 diffuseComponent = mat.diffuse * mat.color * light.color * dot(object_normal, l);
 	vec3 specularComponent = vec3(0.);
@@ -387,7 +391,7 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 				* pow(dot(object_normal, h), mat.shininess);
 	#endif
 
-	if (isLightOnCorrectSide) {
+	if (isLightOnCorrectSide && !isInShadow) {
 		return specularComponent + diffuseComponent;
 	}
 	
