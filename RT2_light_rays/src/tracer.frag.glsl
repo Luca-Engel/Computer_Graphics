@@ -399,7 +399,7 @@ Render the light in the scene using ray-tracing!
 */
 vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 
-	/** #TODO RT2.1: 
+	/** #TODO RT2.1: s
 	- check whether the ray intersects an object in the scene
 	- if it does, compute the ambient contribution to the total intensity
 	- compute the intensity contributionl from each light in the scene and store the sum in pix_color
