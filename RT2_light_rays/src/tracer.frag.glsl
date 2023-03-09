@@ -378,12 +378,19 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 	int material_id;
 	bool isInShadow = ray_intersection(object_point + 0.001 * l, l, distance, normal, material_id);
 
+	if (dot(object_normal, l) < 0.) {
+		return vec3(0.);
+	}
+
 	vec3 diffuseComponent = mat.diffuse * mat.color * light.color * dot(object_normal, l);
 	vec3 specularComponent = vec3(0.);
 
 	#if SHADING_MODE == SHADING_MODE_PHONG
-		specularComponent = light.color * mat.specular * mat.color 
-				* pow(dot(r, direction_to_camera), mat.shininess);
+		if(dot(r, direction_to_camera) >= 0.0) {
+			specularComponent = light.color * mat.specular * mat.color 
+					// * pow(dot(r, direction_to_camera), mat.shininess);
+					* dot(r, direction_to_camera);
+		}
 	#endif
 
 	#if SHADING_MODE == SHADING_MODE_BLINN_PHONG
