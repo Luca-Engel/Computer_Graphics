@@ -364,7 +364,6 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 	vec3 r = reflect(normalize(object_point - light.position), object_normal);
 	vec3 h = normalize(direction_to_camera + light.position - object_point);
 
-	// bool isLightOnCorrectSide = dot(direction_to_camera, l) > 0.;
 	bool isLightOnCorrectSide = dot(object_normal, l) > 0.;
 
 
@@ -392,7 +391,6 @@ vec3 lighting(vec3 object_point, vec3 object_normal, vec3 direction_to_camera, L
 		if(dot(r, direction_to_camera) >= 0.0) {
 			specularComponent = light.color * mat.specular * mat.color 
 					* pow(dot(r, direction_to_camera), mat.shininess);
-					// * dot(r, direction_to_camera);
 		}
 	#endif
 
