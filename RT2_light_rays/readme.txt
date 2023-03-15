@@ -48,6 +48,6 @@ Implement reflections: Task RT2.3.2
     as mirror_creature_BlinnPhong.png and mirror_creature_BlinnPhong_one_light.png for reference.
 
 Workload contribution:
-- Luca Engel (SCIPER): 0.33
+- Luca Engel (329977): 0.33
 - Ahmad Jarrar Khan (353435): 0.33
 - Antoine Garin (327295): 0.33
