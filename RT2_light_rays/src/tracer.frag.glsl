@@ -445,8 +445,8 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 	}
 	*/
 
+	vec3 pix_color_component = vec3(0.);
 	vec3 pix_color = vec3(0.);
-	vec3 total_color = vec3(0.);
 
 	float col_distance;
 	vec3 col_normal = vec3(0.);
@@ -454,7 +454,7 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 
 	vec3 reflected_origin = ray_origin;
 	vec3 reflected_direction = ray_direction;
-	vec3 alpha_prod = vec3(1.);
+	vec3 reflection_weight = vec3(1.);
 
 
 	for (int num_reflect = 0; num_reflect < NUM_REFLECTIONS +1; num_reflect++) {
@@ -462,25 +462,25 @@ vec3 render_light(vec3 ray_origin, vec3 ray_direction) {
 			Material m = get_material(mat_id);
 			// pix_color = m.color;
 			vec3 object_point = col_distance * reflected_direction + reflected_origin;
-			pix_color = m.ambient * m.color * light_color_ambient;
+			pix_color_component = m.ambient * m.color * light_color_ambient;
 
 			#if NUM_LIGHTS != 0
 			for(int i_light = 0; i_light < NUM_LIGHTS; i_light++) {
 				// do something for each light lights[i_light]
 				Light light = lights[i_light];
 
-				pix_color += lighting(object_point, col_normal, -ray_direction, light, m);
+				pix_color_component += lighting(object_point, col_normal, -ray_direction, light, m);
 			}
 			#endif
-			total_color += (1. - m.mirror) * pix_color * alpha_prod;
-			alpha_prod *= m.mirror;
+			pix_color += (1. - m.mirror) * pix_color_component * reflection_weight;
+			reflection_weight *= m.mirror;
 			reflected_origin = object_point + 0.001 * col_normal;
 			reflected_direction = reflect(reflected_direction, col_normal);
 		}
 	}
 	
 
-	return total_color;
+	return pix_color;
 }
 
 

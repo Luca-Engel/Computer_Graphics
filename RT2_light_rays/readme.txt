@@ -31,16 +31,23 @@ Implement Shadows: Task RT2.2
 
 Derive iterative formula: Task RT2.3.1
 - Approach:
+    We computed a general formula for contribution of ith reflected ray and then summed up all contributions upto ith ray, using the assumptions provided. This showed the required formulation.
+    In order to represent it as an iterative formula, we simplified the term by representing the product term using induction and using it for a simpler term.
 
 - Problems:
+    This questions was easy to comprehend and the only difficulty was how to put it into words mathematically.
 
 Implement reflections: Task RT2.3.2
 - Approach:
     For mirror1 and mirror2 we chose 3 as the number of reflections.
     
 - Problems:
+    All the reflections looked realistic and reasonable except mirror creature. There were reflection of the creature on the mirror cylinders but the output was different to the reference image
+    as there was no light reflected from the mirros and the scene appeared much darker than usual. We couldn't find a fix for this issue. However we noted that when we turned off 1 of the 2 lights
+    of the scene, 2 legs of the creature disappeared completely even with reflections turned on (4 number of reflections). We have attached our output 
+    as mirror_creature_BlinnPhong.png and mirror_creature_BlinnPhong_one_light.png for reference.
 
 Workload contribution:
 - Luca Engel (SCIPER): 0.33
-- Ahmad Jarrar (SCIPER): 0.33
+- Ahmad Jarrar Khan (353435): 0.33
 - Antoine Garin (327295): 0.33
