@@ -1,4 +1,8 @@
 import {vec2, vec3, vec4, mat3, mat4} from "../lib/gl-matrix_3.3.0/esm/index.js"
+import { fromScaling } from "../lib/gl-matrix_3.3.0/esm/mat2.js"
+import { fromTranslation } from "../lib/gl-matrix_3.3.0/esm/mat2d.js"
+import { fromMat2d } from "../lib/gl-matrix_3.3.0/esm/mat3.js"
+import { fromXRotation, fromZRotation } from "../lib/gl-matrix_3.3.0/esm/mat4.js"
 import {mat4_matmul_many} from "./icg_math.js"
 
 /*
@@ -110,19 +114,34 @@ export class SysOrbitalMovement {
 			scale = actor.size
 			mat4.fromScaling takes a 3D vector!
 		*/
-
-		//const M_orbit = mat4.create();
+		const M_orbit = mat4.create();
 
 		if(actor.orbit !== null) {
 			// Parent's translation
 			const parent = actors_by_name[actor.orbit]
 			const parent_translation_v = mat4.getTranslation([0, 0, 0], parent.mat_model_to_world)
+			
+			let parent_translation_M = fromTranslation(mat4.create(), parent_translation_v);
+			
 
 			// Orbit around the parent
+			let angle = sim_time * actor.orbit_speed + actor.orbit_phase
+
+			let actor_translation = fromTranslation(mat4.create(), [actor.orbit_radius, 0, 0])
+
+			let rotation = fromZRotation(mat4.create(), angle)
+
+
+			mat4_matmul_many(M_orbit, parent_translation_M, rotation, actor_translation)
 		} 
+
+		let scale = fromScaling(mat4.create(), [actor.size, actor.size, actor.size]);
+		
+
+		mat4_matmul_many(actor.mat_model_to_world, scale, M_orbit);
 		
 		// Store the combined transform in actor.mat_model_to_world
-		//mat4_matmul_many(actor.mat_model_to_world, ...);
+		// mat4_matmul_many(actor.mat_model_to_world, M_orbit);
 	}
 
 	simulate(scene_info) {
@@ -192,6 +211,7 @@ export class SysRenderPlanetsUnshaded {
 				// #TODO GL1.2.1.2
 				// Calculate mat_mvp: model-view-projection matrix	
 				//mat4_matmul_many(mat_mvp, ...)
+				mat4_matmul_many(mat_mvp, mat_projection, mat_view)
 
 				entries_to_draw.push({
 					mat_mvp: mat_mvp,

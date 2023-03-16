@@ -132,10 +132,12 @@ async function main() {
 		* cam_angle_z - camera ray's angle around the Z axis
 		* cam_angle_y - camera ray's angle around the Y axis
 		*/
+		//camera position in world coord
+		let position = [cam_distance_base * cam_distance_factor * Math.sin(cam_angle_z), 0,  cam_distance_base * cam_distance_factor * Math.cos(cam_angle_y)];
 
 		// Example camera matrix, looking along forward-X, edit this
 		const look_at = mat4.lookAt(mat4.create(), 
-			[-5, 0, 0], // camera position in world coord
+			position, // camera position in world coord
 			[0, 0, 0], // view target point
 			[0, 0, 1], // up vector
 		)
