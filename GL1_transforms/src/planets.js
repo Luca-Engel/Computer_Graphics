@@ -116,29 +116,33 @@ export class SysOrbitalMovement {
 		*/
 		const M_orbit = mat4.create();
 
+		let spinning = mat4.fromZRotation(mat4.create(), sim_time * actor.rotation_speed);
+
 		if(actor.orbit !== null) {
 			// Parent's translation
-			const parent = actors_by_name[actor.orbit]
-			const parent_translation_v = mat4.getTranslation([0, 0, 0], parent.mat_model_to_world)
+			const parent = actors_by_name[actor.orbit];
+			const parent_translation_v = mat4.getTranslation([0, 0, 0], parent.mat_model_to_world);
 			
-			let parent_translation_M = fromTranslation(mat4.create(), parent_translation_v);
-			
+			let parent_translation_M = mat4.fromTranslation(mat4.create(), parent_translation_v);
 
 			// Orbit around the parent
-			let angle = sim_time * actor.orbit_speed + actor.orbit_phase
+			let angle = sim_time * actor.orbit_speed + actor.orbit_phase;
 
-			let actor_translation = fromTranslation(mat4.create(), [actor.orbit_radius, 0, 0])
+			// let actor_translation = mat4.fromTranslation(mat4.create(), [actor.orbit_radius, 0, 0])
 
-			let rotation = fromZRotation(mat4.create(), angle)
+			// let rotation = mat4.fromZRotation(mat4.create(), angle);
+
+			let rel_translation = mat4.fromTranslation(mat4.create(), [Math.cos(angle)*actor.orbit_radius, Math.sin(actor.orbit_angle)*actor.orbit_radius, 0]);
 
 
-			mat4_matmul_many(M_orbit, parent_translation_M, rotation, actor_translation)
+
+			mat4_matmul_many(M_orbit, rel_translation, parent_translation_M);
 		} 
 
-		let scale = fromScaling(mat4.create(), [actor.size, actor.size, actor.size]);
+		let scale = mat4.fromScaling(mat4.create(), [actor.size, actor.size, actor.size]);
 		
 
-		mat4_matmul_many(actor.mat_model_to_world, scale, M_orbit);
+		mat4_matmul_many(actor.mat_model_to_world, M_orbit, scale, spinning);
 		
 		// Store the combined transform in actor.mat_model_to_world
 		// mat4_matmul_many(actor.mat_model_to_world, M_orbit);
