@@ -79,7 +79,9 @@ async function main() {
 		void main() {
 			// #TODO GL1.1.1.1 Edit the vertex shader to apply mouse_offset translation to the vertex position.
 			// We have to return a vec4, because homogenous coordinates are being used.
-			gl_Position = vec4(position, 0, 1);
+			
+			vec2 new_position = position + mouse_offset;
+			gl_Position = vec4(new_position, 0, 1);
 		}`,
 			
 		/* 
@@ -122,7 +124,8 @@ async function main() {
 
 		void main() {
 			// #TODO GL1.1.2.1 Edit the vertex shader to apply mat_transform to the vertex position.
-			gl_Position = vec4(position, 0, 1);
+
+			gl_Position = mat_transform * vec4(position, 0, 1);
 		}`,
 		
 		frag: /*glsl*/`
@@ -192,8 +195,8 @@ async function main() {
 		// #TODO GL1.1.1.2 Draw the blue triangle translated by mouse_offset
 		
 		draw_triangle_with_offset({
-			mouse_offset: [0, 0],
-			color: [0.5, 0.5, 0.5],
+			mouse_offset: mouse_offset,
+			color: color_blue,
 		});
 
 		/*
@@ -205,15 +208,22 @@ async function main() {
 				* a red triangle spinning at [0.5, 0, 0]
 			You do not have to apply the mouse_offset to them.
 		*/
-		//draw_triangle_with_transform({
-		//	mat_transform: mat_transform,
-		//	color: [0.5, 0.5, 0.5],
-		//});
+		let M_translation = mat4.fromTranslation(mat4.create(), [0.5, 0, 0]);
+		let M_rotation = mat4.fromZRotation(mat4.create(), sim_time * Math.PI / 6);
 
-		//draw_triangle_with_transform({
-		//	mat_transform: mat_transform,
-		//	color: [0.5, 0.5, 0.5],
-		//});
+		let green_transform = mat4.create();
+		mat4_matmul_many(green_transform, M_rotation, M_translation);
+		draw_triangle_with_transform({
+			mat_transform: green_transform,
+			color: color_green,
+		});
+
+		let red_transform = mat4.create();
+		mat4_matmul_many(red_transform, M_translation, M_rotation);
+		draw_triangle_with_transform({
+			mat_transform: red_transform,
+			color: color_red,
+		});
 
 		// You can write whatever you need in the debug box
 		debug_text.textContent = `
