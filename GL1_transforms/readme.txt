@@ -27,7 +27,7 @@ Task GL1.2.1: MVP matrix:
     we just need to use this formula to compute our mat_mvp matrix.
 
 - Problem:
-    For some reason, we forgot to multiply by actor.mat_model_to_world so there was no planets on the scenes, only the sun.
+    For some reason, we forgot to multiply by actor.mat_model_to_world so we couldn't see the planets on the scenes, only the sun.
 
 
 Task GL1.2.2: View matrix:
@@ -43,10 +43,10 @@ Task GL1.2.2: View matrix:
 
 Task GL1.2.3: Model matrix:
 - Approach:
-    To compute, the model matrix, we first check if the actor has an orbit, if not, then he has no parent and if the actor does have
-    an orbit, it means he has a parents and he is orbiting around him so we need to compute elements (parent's translation and the
+    To compute, the model matrix, we first check if the actor has an orbit, if not, then he has no parent. If the actor does have
+    a parent, it has an orbit. This orbit is around the parent so we need to compute elements (parent's translation and the
     orbit of the actor around his parent) in relation with the parent in order to compute our model matrix. Then we scale our actor
-    according to their size and we make them spin around the Z-axis. Finally we multiply our spinning_matrix by our scaling_matrix by
+    according to their size and we make them spin around the Z-axis. Finally we multiply our spinning_matrix by our scaling_matrix and by
     our orbiting_matrix in order to get our model matrix.
 
 
