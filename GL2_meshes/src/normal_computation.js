@@ -73,9 +73,9 @@ function compute_vertex_normals(mesh, tri_normals, angle_weights) {
 		const w2 = angle_weights[i_face][1]
 		const w3 = angle_weights[i_face][2]
 
-		vertex_normals[iv1] += vec3.scale([0.,0.,0.], normal, w1);
-		vertex_normals[iv2] += vec3.scale([0.,0.,0.], normal, w2);
-		vertex_normals[iv3] += vec3.scale([0.,0.,0.], normal, w3);
+		vertex_normals[iv1] = vec3.add([0., 0., 0.], vertex_normals[iv1], vec3.scale([0.,0.,0.], normal, w1));
+		vertex_normals[iv2] = vec3.add([0., 0., 0.], vertex_normals[iv1], vec3.scale([0.,0.,0.], normal, w2));
+		vertex_normals[iv3] = vec3.add([0., 0., 0.], vertex_normals[iv1], vec3.scale([0.,0.,0.], normal, w3));
 	}
 
 	for(let i_vertex = 0; i_vertex < num_vertices; i_vertex++) {
