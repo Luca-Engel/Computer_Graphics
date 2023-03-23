@@ -28,5 +28,5 @@ void main() {
 		Transform the normals to camera space.
 	*/
 	// gl_Position = mat_mvp * vec4(vertex_position, 1);
-	gl_Position = mat_mvp * vec4(vertex_position, 1);
+	gl_Position = mat_mvp * vec4(vertex_position, 1.);
 }
