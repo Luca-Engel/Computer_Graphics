@@ -27,8 +27,7 @@ function compute_triangle_normals_and_angle_weights(mesh) {
 		const vert3 = get_vert(mesh, mesh.faces[3*i_face + 2]);
 		
 		// Modify the way triangle normals and angle_weights are computed
-		const cross = vec3.cross([0.,0.,0.], vec3.subtract([0.,0.,0.], vert2, vert1), vec3.subtract([0.,0.,0.], vert3, vert1));
-		const normal = vec3.normalize([0.,0.,0.], cross);
+		
 
 		const vec_12 = vec3.subtract([0.,0.,0.], vert2, vert1);
 		const vec_13 = vec3.subtract([0.,0.,0.], vert3, vert1);
@@ -40,6 +39,9 @@ function compute_triangle_normals_and_angle_weights(mesh) {
 		const w1 = Math.abs(vec3.angle(vec_12, vec_13));
 		const w2 = Math.abs(vec3.angle(vec_21, vec_23));
 		const w3 = Math.abs(vec3.angle(vec_31, vec_32));
+
+		const cross = vec3.cross([0.,0.,0.], vec_12, vec_13);
+		const normal = vec3.normalize([0.,0.,0.], cross);
 
 		tri_normals.push(normal)
 		angle_weights.push([w1, w2, w3])

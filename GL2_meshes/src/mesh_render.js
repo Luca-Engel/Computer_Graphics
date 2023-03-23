@@ -212,6 +212,10 @@ class SysRenderMeshes {
 			//mat4_matmul_many(mat_model_view, ...)
 			//mat4_matmul_many(mat_mvp, ...)
 			// calculate mat_normals_to_view 
+			mat4.multiply(mat_model_view, mat_view, actor.mat_model_to_world);
+			mat4.multiply(mat_mvp, mat_projection, mat_model_view);			
+
+			mat3.normalFromMat4(mat_normals_to_view, mat_model_view);
 
 
 			entries_to_draw.push({
