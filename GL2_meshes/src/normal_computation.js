@@ -67,13 +67,18 @@ function compute_vertex_normals(mesh, tri_normals, angle_weights) {
 		const normal = tri_normals[i_face]
 
 		// Add your code for adding the contribution of the current triangle to its vertices' normals
+		const w1 = angle_weights[i_face][0]
+		const w2 = angle_weights[i_face][1]
+		const w3 = angle_weights[i_face][2]
 
+		vertex_normals[iv1] += vec3.scale([0.,0.,0.], normal, w1);
+		vertex_normals[iv2] += vec3.scale([0.,0.,0.], normal, w2);
+		vertex_normals[iv3] += vec3.scale([0.,0.,0.], normal, w3);
 	}
 
 	for(let i_vertex = 0; i_vertex < num_vertices; i_vertex++) {
 		// Normalize the vertices
-
-		vertex_normals[i_vertex] = [1., 0., 0.]
+		vertex_normals[i_vertex] = vec3.normalize([0.,0.,0.], vertex_normals[i_vertex]);
 	}
 
 	return vertex_normals
