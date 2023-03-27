@@ -32,22 +32,26 @@ void main() {
 	Hint: Write the final vertex position to gl_Position
 	*/
 
-	vec3 l = normalize(light_position - vertex_position);
-	vec3 r = reflect(normalize(vertex_position - light_position), vertex_normal);
+	// vec3 r = reflect(normalize(vertex_position_eye - light_position), n);
 
 
-	vec3 h = normalize(vec3(0.) + light_position - vertex_position);
+	vec3 vertex_position_eye = vec3(mat_model_view * vec4(vertex_position, 1));
+
+	vec3 n = normalize(mat_normals_to_view * vertex_normal);
+	vec3 l = normalize(light_position - vertex_position_eye);
+	vec3 v = normalize(-vertex_position_eye);
+	vec3 h = normalize(v + l);
 
 
 	vec3 ambientComponent =  material_ambient * material_color * light_color;
 	vec3 diffuseComponent = vec3(0.);
 	vec3 specularComponent = vec3(0.);
 
-	if (dot(vertex_normal, l) >= 0.) {
-		diffuseComponent = material_ambient * material_color * light_color * dot(vertex_normal, l);
+	if (dot(n, l) > 0.) {
+		diffuseComponent = material_color * light_color * dot(n, l);
 
-		if (dot(vertex_normal, h) >= 0.) {
-			specularComponent = material_ambient * material_color * light_color * pow(dot(vertex_normal, h), material_shininess);
+		if (dot(n, h) > 0.) {
+			specularComponent = material_color * light_color * pow(dot(n, h), material_shininess);
 		}
 	}	
 
