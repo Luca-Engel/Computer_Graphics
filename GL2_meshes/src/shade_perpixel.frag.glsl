@@ -30,8 +30,6 @@ void main()
 	Make sure to normalize values which may have been affected by interpolation!
 	*/
 
-	// vec3 vertex_position_eye = vec3(mat_model_view * vec4(vertex_position, 1));
-
 	vec3 n = normalize(surface_normal);
 	vec3 l = normalize(light_v);
 	vec3 v = normalize(view_v);
