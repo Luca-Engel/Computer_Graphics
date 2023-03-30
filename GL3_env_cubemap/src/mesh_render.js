@@ -83,11 +83,17 @@ class SysRenderMeshes {
 		mat4.fromScaling(actor.mat_model_to_world, actor.scale)
 		mat4.translate(actor.mat_model_to_world, actor.mat_model_to_world, actor.translation)
 
+		const mat_model_view = mat4.create()
+		const mat_mvp = mat4.create()
+		const mat_normals_to_view = mat3.create()
+		mat3.identity(mat_normals_to_view)
+
+
 		/* #TODO GL3.0 Copy mat_model_view, mat_mvp, mat_normals_to_view from GL2.2.2*/
 		// calculate mat_model_view, mat_mvp, mat_normals_to_view 
-		const mat_model_view = mat4.multiply(mat4.create(), mat_view, actor.mat_model_to_world);
-		const mat_mvp = mat4.multiply(mat4.create(), mat_projection, mat_model_view);			
-		const mat_normals_to_view = mat3.normalFromMat4(mat4.create(), mat_model_view);
+		mat4.multiply(mat_model_view, mat_view, actor.mat_model_to_world);
+		mat4.multiply(mat_mvp, mat_projection, mat_model_view);			
+		mat3.normalFromMat4(mat_normals_to_view, mat_model_view);
 
 		return {mat_model_view, mat_mvp, mat_normals_to_view}
 	}

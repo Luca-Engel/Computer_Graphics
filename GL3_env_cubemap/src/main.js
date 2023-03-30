@@ -179,7 +179,7 @@ async function main() {
 		// frame_info.mat_turntable = A * B * ...
 		let z_rotation = mat4.fromZRotation(mat4.create(), cam_angle_z);
 		let y_rotation = mat4.fromYRotation(mat4.create(), cam_angle_y);
-		mat4_matmul_many(frame_info.mat_turntable, look_at, y_rotation, z_rotation) // edit this
+		mat4_matmul_many(frame_info.mat_turntable, look_at, y_rotation, z_rotation)
 
 	}
 

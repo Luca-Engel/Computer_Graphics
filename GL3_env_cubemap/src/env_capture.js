@@ -88,11 +88,12 @@ export class EnvironmentCapture {
 		const near = 0.1;
 		const far = 200;
 
-		this.cube_camera_projection = mat4.perspective(mat4.create(), fovy, aspect, near, far);
-
+		
 		this.run_with_output_framebuffer = regl({
 			framebuffer: regl.prop('out_buffer'),
 		})
+		
+		this.cube_camera_projection = mat4.perspective(mat4.create(), fovy, aspect, near, far);
 	}
 
 	static CUBE_FACE_DIR = [
@@ -113,12 +114,12 @@ export class EnvironmentCapture {
 	*/
 
 	static CUBE_FACE_UP = [
-		[0, 1, 0], // +x
-		[0, 1, 0], // -x
-		[0, 0, -1], // +y
-		[0, 0, 1], // -y
-		[0, 1, 0], // +z
-		[0, 1, 0], // -z
+		[0, -1, 0], // +x
+		[0, -1, 0], // -x
+		[0, 0, 1], // +y
+		[0, 0, -1], // -y
+		[0, -1, 0], // +z
+		[0, -1, 0], // -z
 	]
 
 	cube_camera_view(side_idx, center, mat_view_camera) {
