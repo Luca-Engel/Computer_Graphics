@@ -10,6 +10,8 @@ attribute vec2 vertex_tex_coords;
 //varying ...
 //varying ...
 varying vec2 v2f_uv;
+varying vec3 surface_normal;
+varying vec3 frag_pos;
 
 // Global variables specified in "uniforms" entry of the pipeline
 uniform mat4 mat_mvp;
@@ -31,7 +33,13 @@ void main() {
 	// viewing vector (from camera to vertex in view coordinates), camera is at vec3(0, 0, 0) in cam coords
 	// vertex position in camera coordinates
 	// transform normal to camera coordinates
+	// surface_normal = mat_normals_to_view * vertex_normal;
+	// frag_pos = (mat_model_view * vec4(vertex_position, 1)).xyz;
+
+
+	surface_normal = normalize(mat_normals_to_view * vertex_normal);
+	frag_pos = (mat_model_view * vec4(vertex_position, 1)).xyz;
 	
-	gl_Position = vec4(vertex_position, 1);
+	gl_Position = mat_mvp * vec4(vertex_position, 1);
 
 }

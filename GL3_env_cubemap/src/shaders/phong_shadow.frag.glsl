@@ -4,6 +4,8 @@ precision highp float;
 //varying ...
 //varying ...
 varying vec2 v2f_uv;
+varying vec3 surface_normal;
+varying vec3 frag_pos;
 
 
 uniform vec3 light_position; // light position in camera coordinates
@@ -18,7 +20,7 @@ void main() {
 	/* #TODO GL3.1.1
 	Sample texture tex_color at UV coordinates and display the resulting color.
 	*/
-	vec3 material_color = vec3(v2f_uv, 0.);
+	vec3 material_color = texture2D(tex_color, v2f_uv).rgb;
 	
 	/*
 	#TODO GL3.3.1: Blinn-Phong with shadows and attenuation
@@ -49,6 +51,22 @@ void main() {
 
 	Make sure to normalize values which may have been affected by interpolation!
 	*/
-	vec3 color = light_color * material_color;
+	vec3 n = normalize(surface_normal);
+	vec3 l = normalize(light_position - frag_pos);
+	vec3 v = normalize(-frag_pos);
+	vec3 h = normalize(v + l);
+
+	vec3 specularComponent = vec3(0.);
+	vec3 diffuseComponent = vec3(0.);
+
+	vec3 v_frag_to_light = light_position - frag_pos;
+
+	if (length(v_frag_to_light) < 1.01 * textureCube(cube_shadowmap, normalize(-v_frag_to_light)).r) {
+		diffuseComponent = material_color * dot(n, l);
+		specularComponent = material_color * pow(dot(n, h), material_shininess);
+	}
+
+	vec3 color = light_color * (diffuseComponent + specularComponent) / dot(v_frag_to_light, v_frag_to_light);
+
 	gl_FragColor = vec4(color, 1.); // output: RGBA in 0..1 range
 }
