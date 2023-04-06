@@ -7,6 +7,10 @@ varying float v2f_height;
 //varying ...
 //varying ...
 //varying ...
+varying vec2 v2f_uv;
+varying vec3 surface_normal;
+varying vec3 frag_pos;
+varying vec3 light_pos;
 
 uniform mat4 mat_mvp;
 uniform mat4 mat_model_view;
@@ -28,6 +32,11 @@ void main()
     */
 	// Setup Blinn-Phong varying variables
 	//v2f_normal = normal; // TODO apply normal transformation
+
+    light_pos = light_position.xyz;
+    surface_normal = normalize(mat_normals * normal);
+	frag_pos = (mat_model_view * vec4(position, 1)).xyz;
+
 	
 	gl_Position = mat_mvp * position_v4;
 }
