@@ -222,7 +222,16 @@ float turbulence(vec2 point) {
 	Implement the 2D turbulence function as described in the handout.
 	Again, you should use num_octaves, freq_multiplier, and ampl_multiplier.
 	*/
-	return 0.;
+
+	float fbm = 0.;
+	for (int i = 0; i < num_octaves; i++) {
+		float freq = pow(freq_multiplier, float(i));
+		float ampl = pow(ampl_multiplier, float(i));
+
+		fbm += ampl * abs(perlin_noise(point * freq));
+	}
+
+	return fbm;
 }
 
 vec3 tex_turbulence(vec2 point) {
