@@ -164,7 +164,7 @@ float perlin_noise(vec2 point) {
 
 	float s = dot(grad_c00, point - c00);
 	float t = dot(grad_c10, point - c10);
-	
+
 	float u = dot(grad_c01, point - c01);
 	float v = dot(grad_c11, point - c11);
 
@@ -189,7 +189,16 @@ float perlin_fbm(vec2 point) {
 	Implement 2D fBm as described in the handout. Like in the 1D case, you
 	should use the constants num_octaves, freq_multiplier, and ampl_multiplier. 
 	*/
-	return 0.;
+
+	float fbm = 0.;
+	for (int i = 0; i < num_octaves; i++) {
+		float freq = pow(freq_multiplier, float(i));
+		float ampl = pow(ampl_multiplier, float(i));
+
+		fbm += ampl * perlin_noise(point * freq);
+	}
+
+	return fbm;
 }
 
 vec3 tex_fbm(vec2 point) {
