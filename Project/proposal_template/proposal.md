@@ -22,6 +22,7 @@ Describe the goals of your project here, following the
 
 - physics based simulations: tai chi --> have one simulation with noise functions, one with physical simulation
 
+- enable moving the camera
 - add textures to the elements and smoke
 - add background (e.g., fire place with wood logs, etc.)
 - Temperature influencing color of particles
