@@ -1,16 +1,20 @@
 ---
-title: Fire Simulation
+title: Interactive Fire Simulation
+
+
 ---
 
-![Example of a fire simulation](images/Fire-simulation.jpg){width="600px"}
+![Example of a fire simulation](images/Fire-simulation.jpg){width="700px"}
 
-# Title and Summary
+# Summary
 
-Provide us a descriptive title and 1-2 sentences summarizing your project.
+In this project, our team will create a fire simulation based on noise functions combined with particles simulating burning ashes flying away from the fire. It will include an interactive part where the user can adapt certain parameters.
 
 # Goals and Deliverables
 
-For this project, our goal is to create a simulation of a fire. This will include an interactive part where the user can move the camera and adapt the fire size.
+For this project, our goal is to create a simulation of a fire. This will include an interactive part where the user can move the camera and adapt the fire size. This project will also entail adapting the fire temperature (which affects the fire color) depending on how far away a particular flame is from the fire center.
+
+In the following we have listed the basic features we expect to implement for a passing grade and the advanced features we aim to achieve. We have also added some extra features at the end as potential bonus features in case we finish our project early and aim for a grade between 5.5 and 6.
 
 #### Basic features for passing grade:
 
@@ -42,7 +46,7 @@ For this project, our goal is to create a simulation of a fire. This will includ
 
 # Schedule
 
-Specific plan on when and by whom tasks will be completed.
+We will all cooperate and work on the tasks together. This way we can minimize individual problems as much as possible and mitigate someone getting stuck on a bug while the others do not know much about that team member's code.
 
 ##### Week of 01.05.2023
 - instanciate the project
