@@ -75,4 +75,9 @@ We will all cooperate and work on the tasks together. This way we can minimize i
 
 # Resources
 
-List your dependencies...
+Here are some links that we found could be useful for our project :
+
+- [OpenGL tutorial for the particles](http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/)
+- [WebGL fundamentals for writing particles in javascript](https://webglfundamentals.org/webgl/lessons/webgl-qna-efficient-particle-system-in-javascript---webgl-.html)
+- [Some project report from MIT students](https://groups.csail.mit.edu/graphics/classes/6.837/F99/projects/reports/team09.pdf)
+- [A fire effet simulation using GLSL](https://www.shadertoy.com/view/lsdBD2)

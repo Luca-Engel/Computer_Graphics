@@ -8,10 +8,15 @@
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" href="icg_report.css" />
@@ -24,24 +29,40 @@
 <h1 class="title">Interactive Fire Simulation</h1>
 </header>
 <figure>
-<img src="images/Fire-simulation.jpg" width="700" alt="Example of a fire simulation" /><figcaption aria-hidden="true">Example of a fire simulation</figcaption>
+<img src="images/Fire-simulation.jpg" width="700"
+alt="Example of a fire simulation" />
+<figcaption aria-hidden="true">Example of a fire simulation</figcaption>
 </figure>
 <h1 id="summary">Summary</h1>
-<p>In this project, our team will create a fire simulation based on noise functions combined with particles simulating burning ashes flying away from the fire. It will include an interactive part where the user can adapt certain parameters.</p>
+<p>In this project, our team will create a fire simulation based on
+noise functions combined with particles simulating burning ashes flying
+away from the fire. It will include an interactive part where the user
+can adapt certain parameters.</p>
 <h1 id="goals-and-deliverables">Goals and Deliverables</h1>
-<p>For this project, our goal is to create a simulation of a fire. This will include an interactive part where the user can move the camera and adapt the fire size. This project will also entail adapting the fire temperature (which affects the fire color) depending on how far away a particular flame is from the fire center.</p>
-<p>In the following we have listed the basic features we expect to implement for a passing grade and the advanced features we aim to achieve. We have also added some extra features at the end as potential bonus features in case we finish our project early and aim for a grade between 5.5 and 6.</p>
-<h4 id="basic-features-for-passing-grade">Basic features for passing grade:</h4>
+<p>For this project, our goal is to create a simulation of a fire. This
+will include an interactive part where the user can move the camera and
+adapt the fire size. This project will also entail adapting the fire
+temperature (which affects the fire color) depending on how far away a
+particular flame is from the fire center.</p>
+<p>In the following we have listed the basic features we expect to
+implement for a passing grade and the advanced features we aim to
+achieve. We have also added some extra features at the end as potential
+bonus features in case we finish our project early and aim for a grade
+between 5.5 and 6.</p>
+<h4 id="basic-features-for-passing-grade">Basic features for passing
+grade:</h4>
 <ul>
 <li>noise function fire</li>
 <li>glowing ash particles flying out of the main fire part
 <ul>
-<li>have particles die after a certain time (to simulate ashes not glowing after a while)</li>
+<li>have particles die after a certain time (to simulate ashes not
+glowing after a while)</li>
 <li>Temperature influencing color of particles</li>
 </ul></li>
 </ul>
 <h4 id="advanced-features">Advanced features:</h4>
-<h6 id="we-would-like-to-do-the-following-advanced-features">We would like to do the following advanced features</h6>
+<h6 id="we-would-like-to-do-the-following-advanced-features">We would
+like to do the following advanced features</h6>
 <ul>
 <li><p>noise function for smoke</p></li>
 <li><p>enable moving the camera</p>
@@ -55,7 +76,12 @@
 <li>adapt speed of particles</li>
 </ul></li>
 </ul>
-<h6 id="the-following-advanced-features-would-be-possibilities-if-we-finish-the-other-features-early-however-we-believe-this-is-out-of-the-scope-of-this-project-and-we-will-have-plenty-of-work-with-the-points-listed-above">The following advanced features would be possibilities if we finish the other features early <br> (however, we believe this is out of the scope of this project and we will have plenty of work with the points listed above)</h6>
+<h6
+id="the-following-advanced-features-would-be-possibilities-if-we-finish-the-other-features-early-however-we-believe-this-is-out-of-the-scope-of-this-project-and-we-will-have-plenty-of-work-with-the-points-listed-above">The
+following advanced features would be possibilities if we finish the
+other features early <br> (however, we believe this is out of the scope
+of this project and we will have plenty of work with the points listed
+above)</h6>
 <ul>
 <li>add background (e.g., fire place with wood logs, etc.)
 <ul>
@@ -63,11 +89,15 @@
 </ul></li>
 <li>moving the fire with the curser
 <ul>
-<li>(assuming there is no wind, otherwise this would imply using a lot of physics calculations?)</li>
+<li>(assuming there is no wind, otherwise this would imply using a lot
+of physics calculations?)</li>
 </ul></li>
 </ul>
 <h1 id="schedule">Schedule</h1>
-<p>We will all cooperate and work on the tasks together. This way we can minimize individual problems as much as possible and mitigate someone getting stuck on a bug while the others do not know much about that team member’s code.</p>
+<p>We will all cooperate and work on the tasks together. This way we can
+minimize individual problems as much as possible and mitigate someone
+getting stuck on a bug while the others do not know much about that team
+member’s code.</p>
 <h5 id="week-of-01.05.2023">Week of 01.05.2023</h5>
 <ul>
 <li>instanciate the project</li>
@@ -96,6 +126,20 @@
 <li>Write the report webpage</li>
 </ul>
 <h1 id="resources">Resources</h1>
-<p>List your dependencies…</p>
+<p>Here are some links that we found could be useful for our project
+:</p>
+<ul>
+<li><a
+href="http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/">OpenGL
+tutorial for the particles</a></li>
+<li><a
+href="https://webglfundamentals.org/webgl/lessons/webgl-qna-efficient-particle-system-in-javascript---webgl-.html">WebGL
+fundamentals for writing particles in javascript</a></li>
+<li><a
+href="https://groups.csail.mit.edu/graphics/classes/6.837/F99/projects/reports/team09.pdf">Some
+project report from MIT students</a></li>
+<li><a href="https://www.shadertoy.com/view/lsdBD2">A fire effet
+simulation using GLSL</a></li>
+</ul>
 </body>
 </html>
