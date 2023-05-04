@@ -90,7 +90,7 @@ async function main() {
 	---------------------------------------------------------------*/
 	const mat_turntable = mat4.create();
 	let camera_up = vec3.create();
-	let camera_right = vec3.create();
+	let camera_forward = vec3.create();
 	const cam_distance_base = 0.75;
 
 	let cam_angle_z = -0.5; // in radians!
@@ -126,12 +126,8 @@ async function main() {
 
 		// Extract camera_up and camera_forward from mat_turntable
 		// for the billboard position calculation
-		console.log("before assigning camera_up and camera_right")
-		camera_up = vec3.fromValues(mat_turntable[1], mat_turntable[5], mat_turntable[9])
-		camera_right = vec3.fromValues(mat_turntable[0], mat_turntable[4], mat_turntable[8]);
-		console.log("mat_turntable: " + mat_turntable[9])
-		console.log("camera_up: " + vec3.str(camera_up))
-		// console.log("after assigning camera_up and camera_right" + camera_up)
+		camera_up = [mat_turntable[1], mat_turntable[5], mat_turntable[9]];
+		camera_forward = [mat_turntable[2], mat_turntable[6], mat_turntable[10]];
 	}
 
 	update_cam_transform()
@@ -234,18 +230,13 @@ async function main() {
 
 			mat4.copy(mat_view, mat_turntable)
 
-			console.log("main_terrain camera up:" + vec3.str(camera_up))
-			console.log("main_terrain mat_view:" + mat_view)
-
 			// Calculate light position in camera frame
 			vec4.transformMat4(light_position_cam, light_position_world, mat_view)
-				
+
 			const scene_info = {
 				mat_view:        mat_view,
 				mat_projection:  mat_projection,
 				light_position_cam: light_position_cam,
-				camera_up: camera_up,
-				camera_right: camera_right,
 			}
 
 			// Set the whole image to black

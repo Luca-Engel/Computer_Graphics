@@ -12,9 +12,13 @@ varying vec3 surface_normal;
 varying vec3 frag_pos;
 varying vec3 light_pos;
 
+
 uniform mat4 mat_mvp;
 uniform mat4 mat_model_view;
 uniform mat3 mat_normals; // mat3 not 4, because normals are only rotated and not translated
+uniform vec3 camera_up;
+uniform vec3 camera_right;
+
 
 uniform vec4 light_position; //in camera space coordinates already
 void main()

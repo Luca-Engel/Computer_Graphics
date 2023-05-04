@@ -11,6 +11,9 @@ varying vec3 surface_normal;
 varying vec3 frag_pos;
 varying vec3 light_pos;
 
+uniform vec3 camera_up;
+uniform vec3 camera_right;
+
 
 const vec3  light_color = vec3(1.0, 0.941, 0.898);
 // Small perturbation to prevent "z-fighting" on the water on some machines...

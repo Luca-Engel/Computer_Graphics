@@ -104,6 +104,8 @@ function terrain_build_mesh(height_map) {
 export function init_terrain(regl, resources, height_map_buffer) {
 
 	const terrain_mesh = terrain_build_mesh(new BufferData(regl, height_map_buffer))
+	console.log("terrain mesh" + vec3.str(regl.prop('camera_up')))
+	console.log("terrain mesh" + vec3.str(regl.prop('camera_right')))
 
 	const pipeline_draw_terrain = regl({
 		attributes: {
@@ -116,6 +118,8 @@ export function init_terrain(regl, resources, height_map_buffer) {
 			mat_normals: regl.prop('mat_normals'),
 
 			light_position: regl.prop('light_position'),
+			camera_up: regl.prop('camera_up'),
+			camera_right: regl.prop('camera_right'),
 		},
 		elements: terrain_mesh.faces,
 
@@ -130,15 +134,23 @@ export function init_terrain(regl, resources, height_map_buffer) {
 			this.mat_model_view = mat4.create()
 			this.mat_normals = mat3.create()
 			this.mat_model_to_world = mat4.create()
+			this.camera_up = vec3.create()
+			this.camera_right = vec3.create()
 		}
 
-		draw({mat_projection, mat_view, light_position_cam}) {
+		draw({mat_projection, mat_view, light_position_cam, camera_up, camera_right}) {
 			mat4_matmul_many(this.mat_model_view, mat_view, this.mat_model_to_world)
 			mat4_matmul_many(this.mat_mvp, mat_projection, this.mat_model_view)
 	
 			mat3.fromMat4(this.mat_normals, this.mat_model_view)
 			mat3.transpose(this.mat_normals, this.mat_normals)
 			mat3.invert(this.mat_normals, this.mat_normals)
+
+			console.log("hello")
+			vec3.copy(this.camera_up, camera_up)
+			vec3.copy(this.camera_right, camera_right)
+
+			console.log("Camera up:" + vec3.str(camera_up))
 	
 			pipeline_draw_terrain({
 				mat_mvp: this.mat_mvp,
@@ -146,6 +158,8 @@ export function init_terrain(regl, resources, height_map_buffer) {
 				mat_normals: this.mat_normals,
 		
 				light_position: light_position_cam,
+				camera_up: this.camera_up,
+				camera_right: this.camera_right,
 			})
 		}
 	}
