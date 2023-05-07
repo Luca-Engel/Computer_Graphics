@@ -7,7 +7,7 @@ import { deg_to_rad, mat4_to_string, vec_to_string, mat4_matmul_many } from "./i
 import { icg_mesh_make_uv_sphere } from "./icg_mesh.js"
 import { SystemRenderGrid } from "./icg_grid.js"
 
-import { create_scene_content, SysOrbitalMovement, SysRenderPlanetsUnshaded } from "./fire.js"
+import { create_scene_content, SysMovement, FireParticlesMovement, SysRenderFireParticlesUnshaded, SysRenderPlanetsUnshaded } from "./fire.js"
 
 
 async function load_resources(regl) {
@@ -87,9 +87,13 @@ async function main() {
 
 	const scene_info = create_scene_content()
 
-	const sys_orbital_movement = new SysMovement()
+	const sys_movement = new SysMovement()
+
+	const particles_movement = new FireParticlesMovement()
 
 	const sys_render_unshaded = new SysRenderPlanetsUnshaded(regl, resources)
+
+	const fire_particles_render_unshaded = new SysRenderFireParticlesUnshaded(regl, resources)
 
 	const sys_render_grid = new SystemRenderGrid(regl, resources)
 
@@ -124,14 +128,6 @@ async function main() {
 
 	function update_cam_transform(frame_info) {
 		const { cam_angle_z, cam_angle_y, cam_distance_factor } = frame_info
-
-		/* TODO GL1.2.2
-		Calculate the world-to-camera transformation matrix for turntable camera.
-		The camera orbits the scene 
-		* cam_distance_base * cam_distance_factor = distance of the camera from the (0, 0, 0) point
-		* cam_angle_z - camera ray's angle around the Z axis
-		* cam_angle_y - camera ray's angle around the Y axis
-		*/
 
 		// Example camera matrix, looking along forward-X, edit this
 		let position = [cam_distance_base * (-cam_distance_factor), 0, 0]
@@ -190,68 +186,68 @@ async function main() {
 	register_keyboard_action('g', () => grid_on = !grid_on);
 
 	// Focusing on selected planet
-	let selected_planet_name = 'earth';
+	let selected_planet_name = 'sun';
 	const elem_view_select = document.getElementById('view-select')
 
-	function set_selected_planet(name) {
-		console.log('Selecting', name);
-		selected_planet_name = name;
-		frame_info.cam_distance_factor = 3 * scene_info.actors_by_name[name].size / cam_distance_base;
-		update_cam_transform(frame_info)
-	}
+	// function set_selected_planet(name) {
+	// 	console.log('Selecting', name);
+	// 	selected_planet_name = name;
+	// 	frame_info.cam_distance_factor = 3 * scene_info.actors_by_name[name].size / cam_distance_base;
+	// 	update_cam_transform(frame_info)
+	// }
 
-	set_selected_planet('earth');
+	// set_selected_planet('earth');
 
-	for (const name in scene_info.actors_by_name) {
-		if (scene_info.actors_by_name.hasOwnProperty(name)) {
-			const entry = document.createElement('li');
-			entry.textContent = name;
-			entry.addEventListener('click', (event) => set_selected_planet(name));
-			elem_view_select.appendChild(entry);
-		}
-	}
+	// for (const name in scene_info.actors_by_name) {
+	// 	if (scene_info.actors_by_name.hasOwnProperty(name)) {
+	// 		const entry = document.createElement('li');
+	// 		entry.textContent = name;
+	// 		entry.addEventListener('click', (event) => set_selected_planet(name));
+	// 		elem_view_select.appendChild(entry);
+	// 	}
+	// }
 
 
 	// Predefined views
-	register_keyboard_action('1', () => {
-		is_paused = true
-		grid_on = true
+	// register_keyboard_action('1', () => {
+	// 	is_paused = true
+	// 	grid_on = true
 
-		set_selected_planet('earth')
+	// 	set_selected_planet('earth')
 
-		scene_info.sim_time = 32.0
-		frame_info.cam_angle_z = 169.3 * deg_to_rad
-		frame_info.cam_angle_y = -201.7 * deg_to_rad
-		frame_info.cam_distance_factor = 8.2 / cam_distance_base
+	// 	scene_info.sim_time = 32.0
+	// 	frame_info.cam_angle_z = 169.3 * deg_to_rad
+	// 	frame_info.cam_angle_y = -201.7 * deg_to_rad
+	// 	frame_info.cam_distance_factor = 8.2 / cam_distance_base
 
-		update_cam_transform(frame_info)
-	})
-	register_keyboard_action('2', () => {
-		is_paused = true
-		grid_on = true
+	// 	update_cam_transform(frame_info)
+	// })
+	// register_keyboard_action('2', () => {
+	// 	is_paused = true
+	// 	grid_on = true
 
-		set_selected_planet('sun')
+	// 	set_selected_planet('sun')
 
-		scene_info.sim_time = 17.7
-		frame_info.cam_angle_z = 19.1 * deg_to_rad
-		frame_info.cam_angle_y = -33.2 * deg_to_rad
-		frame_info.cam_distance_factor = 18.9 / cam_distance_base
+	// 	scene_info.sim_time = 17.7
+	// 	frame_info.cam_angle_z = 19.1 * deg_to_rad
+	// 	frame_info.cam_angle_y = -33.2 * deg_to_rad
+	// 	frame_info.cam_distance_factor = 18.9 / cam_distance_base
 
-		update_cam_transform(frame_info)
-	})
-	register_keyboard_action('3', () => {
-		is_paused = true
-		grid_on = false
+	// 	update_cam_transform(frame_info)
+	// })
+	// register_keyboard_action('3', () => {
+	// 	is_paused = true
+	// 	grid_on = false
 
-		set_selected_planet('moon')
+	// 	set_selected_planet('moon')
 
-		scene_info.sim_time = 18.73
-		frame_info.cam_angle_z = -124.1 * deg_to_rad
-		frame_info.cam_angle_y = 176.8 * deg_to_rad
-		frame_info.cam_distance_factor = 3.2 / cam_distance_base
+	// 	scene_info.sim_time = 18.73
+	// 	frame_info.cam_angle_z = -124.1 * deg_to_rad
+	// 	frame_info.cam_angle_y = 176.8 * deg_to_rad
+	// 	frame_info.cam_distance_factor = 3.2 / cam_distance_base
 
-		update_cam_transform(frame_info)
-	})
+	// 	update_cam_transform(frame_info)
+	// })
 
 
 
@@ -274,10 +270,13 @@ async function main() {
 
 
 		// Update planet transforms
-		sys_orbital_movement.simulate(scene_info)
+		sys_movement.simulate(scene_info)
+
+		particles_movement.simulate(scene_info)
 
 
 		// Calculate view matrix, view centered on chosen planet
+		// TODO: Change the matrices to point towards origin (Further tasks later) Not sure, can be used to create camera movements
 		{
 			mat4.perspective(mat_projection,
 				deg_to_rad * 60, // fov y
@@ -317,6 +316,8 @@ async function main() {
 		regl.clear({ color: [0, 0, 0, 1] });
 
 		sys_render_unshaded.render(frame_info, scene_info)
+
+		fire_particles_render_unshaded.render(frame_info, scene_info)
 
 		if (grid_on) {
 			sys_render_grid.render(frame_info, scene_info)
