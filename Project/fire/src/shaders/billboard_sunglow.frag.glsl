@@ -7,5 +7,11 @@ void main()
 {
 	// TODO 5.1.2 compute the alpha value of each fragment
 	// The alpha value of this fragment exponentially decrease when the v2f_tex_coord is away from the center
-	gl_FragColor = vec4(glow_color, 1);
+	// gl_FragColor = vec4(glow_color, 1);
+
+	// distance between current fragment's texture coordinate center of texture
+	// float distance = length(v2f_tex_coord - vec2(0.5));
+	// float alpha = exp(-glow_decay * pow(distance / glow_radius, 2.0));
+	alpha = 1.0;
+	gl_FragColor = vec4(glow_color, alpha);
 }

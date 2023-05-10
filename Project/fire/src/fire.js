@@ -267,6 +267,25 @@ export class SysRenderFireParticlesUnshaded {
 				texture_base_color: regl.prop('tex_base_color'),
 			},
 
+			// TODO: check if blending is good or if parameters need adjusting
+			// https://learnopengl.com/Advanced-OpenGL/Blending
+			// https://github.com/regl-project/regl/blob/master/API.md#blending
+			// this adds background color to the texture --> lots of fire --> brighter
+			blend: {
+				enable: true,
+				func: {
+					srcRGB: 'src alpha',
+					srcAlpha: 'one',
+					dstRGB: 'one',
+					dstAlpha: 'one',
+				},
+				equation: {
+					rgb: 'add',
+					alpha: 'add',
+				},
+				color: [0,0,0,0],
+			},
+
 			vert: resources['unshaded.vert.glsl'],
 			frag: resources['unshaded.frag.glsl'],
 		})
