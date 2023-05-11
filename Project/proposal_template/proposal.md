@@ -73,17 +73,95 @@ We will all cooperate and work on the tasks together. This way we can minimize i
 - Write the report webpage
 
 
+# TA Review Grading Contract
+Core [4.0]
+Particle rendering with billboards [only with WebGL]
+
+- drawing billboards (a surface always facing the camera)
+- simple shader of fire / smoke / cloud, based on noise (this shader is applied to the billboards)
+- particles animate over time:
+  - the fire evolves / smoke dissipates etc
+  - particles move in space
+  - particles disappear after some time smoothly
+- at least 2-3 distinct types of particles (ie fire, smoke, cloud, water splash, magic)
+- particles can be spawning at a constant rate
+
+Please cite resources used (such as tutorial/articles you find online, code snippets, external libraries, 3d models) so that we can determine what is your original contribution. Thanks!
+
+Extensions [clamped to 5.5]
+[+0.25] Dealing with overlap
+Particles are usually used in tight groups to create an impression of filling a volume. 
+This poses a challenge since they visually overlap. One of those solutions might help:
+- Use transparency and sorting
+  The particle shader is partially transparent. Then it makes a difference which particle is drawn on top.
+   Particles can be sorted by position to draw the ones closest to the camera last.
+OR
+- Use masked shader (one with `discard` instruction) to create opaque particles with holes in them (driven by the noise).
+Then the depth buffer will be used to show whats in front.
+
+[+0.5] use instanced rendering pipeline in regl, draw a big number of particles
+All particles are drawn in a single draw call.
+This involves setting up buffers to store the particle data and updating the buffer.
+
+[+0.25 - +0.5] Elaborate particle spawning, [+0.25] for each spawning scheme
+Particles are created at different locations in the scene for an artistic effect.
+Examples:
+- small asteroids split from the main one and each of them has their fire trail
+- clusters of particles make clouds which move over time and animate their shape
+
+[+1 on WebGL] Bloom multi-pass rendering pipeline.
+Bloom is the glow around bright parts of the scene, it creates a very potent visual effect.
+It is achieved by running a 2nd rendering pass which blurs the high-brightness areas.
+
+[+1 on WebGL] Deferred shading multi-pass pipeline, allowing numerous small light sources.
+The rendering is split into two stages: 
+- save depth, normals and colors of the solid parts of the scene to a buffer
+- draw the lights on top of it
+
+[+0.5] Scene composition
+The particle emitters are composed into a complete scene. 
+There are multiple points where particles are spawned.
+
+[+0.5] Camera - animated camera path and target, video cinematography
+Setup several shots in your video to showcase your scene and effects. Move the camera along a programmed path.
+   [+1 instead of 0.5] if camera paths are using Bézier curves for camera trajectory and you implement the formulas yourself.
+  (Curve automatically generated, or manually designed for a fixed scene - if scene is gneerated you can guarantee a fixed scene by seeding the random number generator with a constant seed)
+
+--------------------
+Please let us know your thoughts!
+We wish you an enjoyable and inspiring project.
+
+If you have an implementation plan or prototype you can consult it with us before grading to determine if it satisfied the contract objective.
+Reply 
+See this post in context 
+
+
+
 # Milestone Report
 
 ## Summary
+We started out by having fire spawn as spherical actors that were grading with a gaussian function whose size decreased over time and disappeared over time. Also, we started with the billboarding to make the computation more efficient and not have to render entire spheres. We managed to make the billboards always look at the camera, however, when moving the camera around, the billboards do not always have the same orientation and rotate in their own plane. We have not yet been able to find out why this is the case.
+
+This means that, from our core tasks, we have been able to complete the animation of particles and their spawning and partially complete the billboarding, the shader, and the multiple types of particles.
+
 
 ## Current State
+Our sphere implementation of the fire looked as follows:
+
+![Fire simulation with the spheres](images/fire_simulation_spheres.jpg){width="700px"}
+
+This is the current state of the billboard implementation
+
+![Fire simulation with the billboards](images/fire_billboarding_upright_squares.jpg){width="700px"}
+
+When moving the camera around, the billboards change their orientation within their plane (which should not happen and will be fixed)
+
+![Problem with the sideways billboards](images/fire_billboarding_sideways_squares.png){width="700px"}
 
 
 ## Updated Schedule
-
-- still need noise function for smoke
-- still need noise function for texture of fire
+In a next step, we will try to fix the billboard issue described above. Additionally, we will implement the bézier curve extension. We will also add the animation of smoke and its dissipation in our simulation.
+Lastly, we will need to enable the fire particles to look like particles instead of squares which we are planning to do with images containing black parts which should end up being see-through
 
 # Resources
 
