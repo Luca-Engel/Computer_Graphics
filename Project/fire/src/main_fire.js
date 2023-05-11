@@ -120,7 +120,7 @@ async function main() {
 	/*---------------------------------------------------------------
 		Camera
 	---------------------------------------------------------------*/
-	const cam_distance_base = 15.
+	const cam_distance_base = 5.
 
 	function update_cam_transform(frame_info) {
 		const { cam_angle_z, cam_angle_y, cam_distance_factor } = frame_info
