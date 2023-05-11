@@ -33,7 +33,7 @@ export function create_scene_content() {
 			velocity_z: 0.3 * Math.random(),
 
 			// TODO: Change Texture here, change to flame texture, can also give an array of textures
-			texture_name: "flame2.jpg",
+			texture_name: "sun.jpg",
 			shader_type: "unshaded",
 		}
 		fire_particles.push(particle);
@@ -65,8 +65,9 @@ export class FireParticlesMovement {
 
 		// TODO: Add billboarding transform here
 		const vec_to_camera = vec3.normalize([0, 0, 0], camera_position);
-		const normal = vec3.fromValues(0, 0, 1);
+		const normal = vec3.fromValues(0, 1, 0);
 		const rot_axis = vec3.cross([0, 0, 0], normal, vec_to_camera);
+
 		const angle_to_camera = vec3.angle(normal, vec_to_camera);
 		mat4.fromRotation(M_rotate, angle_to_camera, rot_axis);
 
@@ -89,7 +90,7 @@ export class FireParticlesMovement {
 		let M_scale = mat4.fromScaling(mat4.create, [remaining_life_scale, remaining_life_scale, remaining_life_scale])
 
 		// Store the combined transform in particle.mat_model_to_world
-		mat4_matmul_many(particle.mat_model_to_world, M_translate, M_scale)
+		mat4_matmul_many(particle.mat_model_to_world, M_translate, M_scale, M_rotate)
 
 		// TODO: can also select active texture (if multiple) based on lifetime
 	}
@@ -168,7 +169,7 @@ export class FireParticlesRenderer {
 					srcRGB: 'src alpha',
 					srcAlpha: 'one',
 					dstRGB: 'one',
-					dstAlpha: 'one',
+					dstAlpha: 'src alpha',
 				},
 				equation: {
 					rgb: 'add',
