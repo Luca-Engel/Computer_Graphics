@@ -73,6 +73,18 @@ We will all cooperate and work on the tasks together. This way we can minimize i
 - Write the report webpage
 
 
+# Milestone Report
+
+## Summary
+
+## Current State
+
+
+## Updated Schedule
+
+- still need noise function for smoke
+- still need noise function for texture of fire
+
 # Resources
 
 Here are some links that we found could be useful for our project :
