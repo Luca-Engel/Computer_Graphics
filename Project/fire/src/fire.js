@@ -140,13 +140,25 @@ export class SysMovement {
 export class FireParticlesMovement {
 
 	constructor() {
+		this.mat_model_to_world_billboard = mat4.create()
 	}
 
-	calculate_model_matrix(particle, sim_time) {
+	calculate_model_matrix(particle, sim_time, camera_position) {
 
 		let M_translate = mat4.create();
 
 		// TODO: Add billboarding transform here
+		const vec_to_camera = vec3.normalize([0, 0, 0], camera_position);
+		const normal = vec3.fromValues(0, 0, 1);
+		const rot_axis = vec3.cross([0, 0, 0], normal, vec_to_camera);
+		const angle_to_camera = vec3.angle(normal, vec_to_camera);
+		mat4.fromRotation(this.mat_model_to_world_billboard, angle_to_camera, rot_axis);
+
+		// console.log(camera_position)
+		// console.log(this.mat_model_to_world)
+
+
+
 		let initial_position_transform = mat4.fromTranslation(mat4.create(), particle.start_position)
 		let particle_time = sim_time % particle.lifetime;
 
@@ -166,13 +178,13 @@ export class FireParticlesMovement {
 		// TODO: can also select active texture (if multiple) based on lifetime
 	}
 
-	simulate(scene_info) {
+	simulate(scene_info, camera_position) {
 
 		const { sim_time, fire_particles } = scene_info
 
 		// Iterate over fire particles
 		for (const particle of fire_particles) {
-			this.calculate_model_matrix(particle, sim_time)
+			this.calculate_model_matrix(particle, sim_time, camera_position)
 		}
 	}
 

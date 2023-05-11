@@ -87,11 +87,7 @@ async function main() {
 
 	const scene_info = create_scene_content()
 
-	const sys_movement = new SysMovement()
-
 	const particles_movement = new FireParticlesMovement()
-
-	const sys_render_unshaded = new SysRenderPlanetsUnshaded(regl, resources)
 
 	const fire_particles_render_unshaded = new SysRenderFireParticlesUnshaded(regl, resources)
 
@@ -269,11 +265,6 @@ async function main() {
 		prev_regl_time = frame.time;
 
 
-		// Update planet transforms
-		sys_movement.simulate(scene_info)
-
-		particles_movement.simulate(scene_info)
-
 
 		// Calculate view matrix, view centered on chosen planet
 		// TODO: Change the matrices to point towards origin (Further tasks later) Not sure, can be used to create camera movements
@@ -285,8 +276,7 @@ async function main() {
 				100, // far
 			)
 
-			const selected_planet_model_mat = scene_info.actors_by_name[selected_planet_name].mat_model_to_world
-			const selected_planet_position = mat4.getTranslation([0, 0, 0], selected_planet_model_mat)
+			const selected_planet_position = mat4.create([0,0,0])//mat4.getTranslation([0, 0, 0], selected_planet_model_mat)
 			vec3.scale(selected_planet_position, selected_planet_position, -1);
 			const selected_planet_translation_mat = mat4.fromTranslation(mat4.create(), selected_planet_position)
 			mat4_matmul_many(mat_view, mat_turntable, selected_planet_translation_mat)
@@ -312,10 +302,11 @@ async function main() {
 			mat4.getTranslation(camera_position, mat_camera_to_world)
 		}
 
+
+		particles_movement.simulate(scene_info, camera_position)
+
 		// Set the whole image to black
 		regl.clear({ color: [0, 0, 0, 1] });
-
-		sys_render_unshaded.render(frame_info, scene_info)
 
 		fire_particles_render_unshaded.render(frame_info, scene_info)
 
