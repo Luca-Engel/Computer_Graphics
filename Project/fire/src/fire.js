@@ -5,7 +5,7 @@ import { mat4_matmul_many } from "./icg_math.js"
 	Construct the scene!
 */
 export function create_scene_content() {
-	var diameterAroundCenter = 2
+	var diameterAroundCenter = 1
 	var halfDiameterAroundCenter = diameterAroundCenter / 2
 
 	const fire_particles = []
@@ -13,7 +13,7 @@ export function create_scene_content() {
 	for (let index = 0; index < 1000; index++) {
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
 		const particle = {
-			lifetime: 4 * Math.random(),
+			lifetime: 3 * Math.random(),
 			size: 0.03 * Math.random() + 0.01,
 
 			// TODO: Tune particle starting position using perline noise etc
@@ -28,9 +28,9 @@ export function create_scene_content() {
 			// 	0.02 * Math.random() - 0.01),
 
 			// TODO: Tune particle movement direction using perline noise etc
-			velocity_x: 0.4 * Math.random() - 0.2,
-			velocity_y: 0.4 * Math.random() - 0.2,
-			velocity_z: 1 * Math.random(),
+			velocity_x: 0.2 * Math.random() - 0.1,
+			velocity_y: 0.2 * Math.random() - 0.1,
+			velocity_z: 0.3 * Math.random(),
 
 			// TODO: Change Texture here, change to flame texture, can also give an array of textures
 			texture_name: "sun.jpg",
@@ -140,19 +140,19 @@ export class SysMovement {
 export class FireParticlesMovement {
 
 	constructor() {
-		this.mat_model_to_world_billboard = mat4.create()
 	}
 
 	calculate_model_matrix(particle, sim_time, camera_position) {
 
 		let M_translate = mat4.create();
+		let M_rotate = mat4.create();
 
 		// TODO: Add billboarding transform here
 		const vec_to_camera = vec3.normalize([0, 0, 0], camera_position);
 		const normal = vec3.fromValues(0, 0, 1);
 		const rot_axis = vec3.cross([0, 0, 0], normal, vec_to_camera);
 		const angle_to_camera = vec3.angle(normal, vec_to_camera);
-		mat4.fromRotation(this.mat_model_to_world_billboard, angle_to_camera, rot_axis);
+		mat4.fromRotation(M_rotate, angle_to_camera, rot_axis);
 
 		// console.log(camera_position)
 		// console.log(this.mat_model_to_world)
@@ -265,13 +265,42 @@ export class SysRenderFireParticlesUnshaded {
 		//TODO: Change from sphere to billboard (will speed up rendering I hope), Hint: can see the 2D traiangle gneration in GL1 Exercise
 		const mesh_uvsphere = resources.mesh_uvsphere
 
+		const rectangle = {
+			vertex_positions: [
+				[-0.5, 0, -0.5],
+				[0.5, 0, - 0.5],
+				[-0.5, 0, 0.5],
+				// [0.5, -0.5, 0],
+				// [-0.5, 0.5, 0],
+				[0.5, 0, 0.5],
+			],
+			vertex_tex_coordinates: [
+				// Triangle 1
+				[0, 0],
+				[1, 0],
+				[0, 1],
+				// Triangle 2
+				// [1, 0],
+				// [0, 1],
+				[1, 1],
+			],
+			faces: [
+				// Triangle 1
+				[0, 1, 2],
+				// Triangle 2
+				[1, 2, 3],
+
+			]
+
+		}
+
 		this.pipeline = regl({
 			attributes: {
-				position: mesh_uvsphere.vertex_positions,
-				tex_coord: mesh_uvsphere.vertex_tex_coords,
+				position: rectangle.vertex_positions,
+				tex_coord: rectangle.vertex_tex_coordinates,
 			},
 			// Faces, as triplets of vertex indices
-			elements: mesh_uvsphere.faces,
+			elements: rectangle.faces,
 
 			// Uniforms: global data available to the shader
 			uniforms: {
@@ -295,7 +324,7 @@ export class SysRenderFireParticlesUnshaded {
 					rgb: 'add',
 					alpha: 'add',
 				},
-				color: [0,0,0,0],
+				color: [0, 0, 0, 0],
 			},
 
 			vert: resources['unshaded.vert.glsl'],
