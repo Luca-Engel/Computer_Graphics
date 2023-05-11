@@ -276,10 +276,10 @@ async function main() {
 				100, // far
 			)
 
-			const selected_planet_position = mat4.create([0,0,0])//mat4.getTranslation([0, 0, 0], selected_planet_model_mat)
-			vec3.scale(selected_planet_position, selected_planet_position, -1);
-			const selected_planet_translation_mat = mat4.fromTranslation(mat4.create(), selected_planet_position)
-			mat4_matmul_many(mat_view, mat_turntable, selected_planet_translation_mat)
+			// const selected_planet_position = mat4.create([0, 0, 0])//mat4.getTranslation([0, 0, 0], selected_planet_model_mat)
+			// vec3.scale(selected_planet_position, selected_planet_position, -1);
+			const camera_focus_translation_mat = mat4.fromTranslation(mat4.create(), [0, 0, 0])
+			mat4_matmul_many(mat_view, mat_turntable, camera_focus_translation_mat)
 		}
 
 		// Calculate light position in camera frame
