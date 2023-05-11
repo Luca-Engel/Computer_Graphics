@@ -7,7 +7,7 @@ import { deg_to_rad, mat4_to_string, vec_to_string, mat4_matmul_many } from "./i
 import { icg_mesh_make_uv_sphere } from "./icg_mesh.js"
 import { SystemRenderGrid } from "./icg_grid.js"
 
-import { create_scene_content, SysMovement, FireParticlesMovement, SysRenderFireParticlesUnshaded, SysRenderPlanetsUnshaded } from "./fire.js"
+import { create_scene_content, FireParticlesMovement, FireParticlesRenderer, } from "./fire.js"
 
 
 async function load_resources(regl) {
@@ -31,8 +31,7 @@ async function load_resources(regl) {
 	const resource_promises = {}
 
 	const textures_to_load = [
-		'sun.jpg', 'moon.jpg', 'mars.jpg',
-		'earth_day.jpg', 'earth_night.jpg', 'earth_gloss.jpg',
+		'sun.jpg', 'moon.jpg', 'mars.jpg', 'flame.jpg', 'flame2.jpg'
 	]
 	for (const tex_name of textures_to_load) {
 		resource_promises[tex_name] = load_texture(regl, `./textures/${tex_name}`)
@@ -89,7 +88,7 @@ async function main() {
 
 	const particles_movement = new FireParticlesMovement()
 
-	const fire_particles_render_unshaded = new SysRenderFireParticlesUnshaded(regl, resources)
+	const fire_particles_renderer = new FireParticlesRenderer(regl, resources)
 
 	const sys_render_grid = new SystemRenderGrid(regl, resources)
 
@@ -182,7 +181,6 @@ async function main() {
 	register_keyboard_action('g', () => grid_on = !grid_on);
 
 	// Focusing on selected planet
-	let selected_planet_name = 'sun';
 	const elem_view_select = document.getElementById('view-select')
 
 	// function set_selected_planet(name) {
@@ -221,29 +219,6 @@ async function main() {
 	// register_keyboard_action('2', () => {
 	// 	is_paused = true
 	// 	grid_on = true
-
-	// 	set_selected_planet('sun')
-
-	// 	scene_info.sim_time = 17.7
-	// 	frame_info.cam_angle_z = 19.1 * deg_to_rad
-	// 	frame_info.cam_angle_y = -33.2 * deg_to_rad
-	// 	frame_info.cam_distance_factor = 18.9 / cam_distance_base
-
-	// 	update_cam_transform(frame_info)
-	// })
-	// register_keyboard_action('3', () => {
-	// 	is_paused = true
-	// 	grid_on = false
-
-	// 	set_selected_planet('moon')
-
-	// 	scene_info.sim_time = 18.73
-	// 	frame_info.cam_angle_z = -124.1 * deg_to_rad
-	// 	frame_info.cam_angle_y = 176.8 * deg_to_rad
-	// 	frame_info.cam_distance_factor = 3.2 / cam_distance_base
-
-	// 	update_cam_transform(frame_info)
-	// })
 
 
 
@@ -308,7 +283,7 @@ async function main() {
 		// Set the whole image to black
 		regl.clear({ color: [0, 0, 0, 1] });
 
-		fire_particles_render_unshaded.render(frame_info, scene_info)
+		fire_particles_renderer.render(frame_info, scene_info)
 
 		if (grid_on) {
 			sys_render_grid.render(frame_info, scene_info)
