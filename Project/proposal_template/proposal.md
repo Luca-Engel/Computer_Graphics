@@ -144,6 +144,8 @@ We started out by having fire spawn as spherical actors that were grading with a
 
 This means that, from our core tasks, we have been able to complete the animation of particles and their spawning and partially complete the billboarding, the shader, and the multiple types of particles.
 
+We started with the GL1 template since it had a lot of useful code we could have used like the camera rotation, or the use of actors in our scene for example.
+
 
 ## Current State
 Our sphere implementation of the fire looked as follows:
