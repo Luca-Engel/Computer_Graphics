@@ -33,7 +33,7 @@ export function create_scene_content() {
 			velocity_z: 0.3 * Math.random(),
 
 			// TODO: Change Texture here, change to flame texture, can also give an array of textures
-			texture_name: "sun.jpg",
+			texture_name: "flame.jpg",
 			shader_type: "unshaded",
 		}
 		fire_particles.push(particle);
