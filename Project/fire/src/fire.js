@@ -5,15 +5,15 @@ import { mat4_matmul_many } from "./icg_math.js"
 	Construct the scene!
 */
 export function create_scene_content() {
-	var diameterAroundCenter = 1
+	var diameterAroundCenter = 0.1
 	var halfDiameterAroundCenter = diameterAroundCenter / 2
 
 	const fire_particles = []
 
-	for (let index = 0; index < 1000; index++) {
+	for (let index = 0; index < 100; index++) {
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
 		const particle = {
-			lifetime: 3 * Math.random(),
+			lifetime: 2 * Math.random(),
 			size: 0.03 * Math.random() + 0.01,
 
 			// TODO: Tune particle starting position using perline noise etc
@@ -28,12 +28,12 @@ export function create_scene_content() {
 			// 	0.02 * Math.random() - 0.01),
 
 			// TODO: Tune particle movement direction using perline noise etc
-			velocity_x: 0.2 * Math.random() - 0.1,
-			velocity_y: 0.2 * Math.random() - 0.1,
-			velocity_z: 0.3 * Math.random(),
+			velocity_x: 0.025 * Math.random() - 0.0125,
+			velocity_y: 0.025 * Math.random() - 0.0125,
+			velocity_z: 0.1 * Math.random(),
 
 			// TODO: Change Texture here, change to flame texture, can also give an array of textures
-			texture_name: "flame.jpg",
+			texture_name: "sun.jpg",
 			shader_type: "unshaded",
 		}
 		fire_particles.push(particle);
@@ -169,7 +169,7 @@ export class FireParticlesRenderer {
 					srcRGB: 'src alpha',
 					srcAlpha: 'one',
 					dstRGB: 'one',
-					dstAlpha: 'src alpha',
+					dstAlpha: 'one minus src alpha',
 				},
 				equation: {
 					rgb: 'add',

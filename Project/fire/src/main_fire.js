@@ -103,7 +103,7 @@ async function main() {
 
 		cam_angle_z: Math.PI * 0.2, // in radians!
 		cam_angle_y: -Math.PI / 6, // in radians!
-		cam_distance_factor: 1.,
+		cam_distance_factor: 0.3,
 		camera_position: [0, 0, 0],
 		mat_turntable: mat4.create(),
 
