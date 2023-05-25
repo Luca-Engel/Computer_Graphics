@@ -9,6 +9,7 @@ export function create_scene_content() {
 	var halfDiameterAroundCenter = diameterAroundCenter / 2
 
 	const fire_particles = []
+	const smoke_particles = [];
 
 	for (let index = 0; index < 100; index++) {
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
@@ -39,6 +40,21 @@ export function create_scene_content() {
 		fire_particles.push(particle);
 
 
+		const smoke_particle = {
+			lifetime: 2 * Math.random(),
+			size: 0.03 * Math.random() + 0.01,
+			start_position: vec3.fromValues(
+				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 3,
+				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 3,
+				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
+			),
+			velocity_x: 0.025 * Math.random() - 0.0125,
+			velocity_y: 0.025 * Math.random() - 0.0125,
+			velocity_z: 0.1 * Math.random(),
+			texture_name: "moon.jpg",
+			shader_type: "unshaded",
+		};
+		smoke_particles.push(smoke_particle);
 	}
 
 	// In each particle, allocate its transformation matrix
@@ -46,10 +62,15 @@ export function create_scene_content() {
 		particle.mat_model_to_world = mat4.create()
 	}
 
+	for (const particle of smoke_particles) {
+		particle.mat_model_to_world = mat4.create()
+	}
+
 	// Construct scene info
 	return {
 		sim_time: 0.,
 		fire_particles: fire_particles,
+		smoke_particles: smoke_particles,
 	}
 }
 
@@ -97,10 +118,14 @@ export class FireParticlesMovement {
 
 	simulate(scene_info, camera_position) {
 
-		const { sim_time, fire_particles } = scene_info
+		const { sim_time, fire_particles, smoke_particles } = scene_info
 
 		// Iterate over fire particles
 		for (const particle of fire_particles) {
+			this.calculate_model_matrix(particle, sim_time, camera_position)
+		}
+		// Iterate over smoke particles
+		for (const particle of smoke_particles) {
 			this.calculate_model_matrix(particle, sim_time, camera_position)
 		}
 	}
@@ -216,3 +241,111 @@ export class FireParticlesRenderer {
 	}
 }
 
+
+
+export class SmokeParticlesRenderer {
+
+	constructor(regl, resources) {
+		//TODO: Change from sphere to billboard (will speed up rendering I hope), Hint: can see the 2D traiangle gneration in GL1 Exercise
+		const mesh_uvsphere = resources.mesh_uvsphere
+
+		const rectangle = {
+			vertex_positions: [
+				[-0.5, 0, -0.5],
+				[0.5, 0, - 0.5],
+				[-0.5, 0, 0.5],
+				// [0.5, -0.5, 0],
+				// [-0.5, 0.5, 0],
+				[0.5, 0, 0.5],
+			],
+			vertex_tex_coordinates: [
+				// Triangle 1
+				[0, 0],
+				[1, 0],
+				[0, 1],
+				// Triangle 2
+				// [1, 0],
+				// [0, 1],
+				[1, 1],
+			],
+			faces: [
+				// Triangle 1
+				[0, 1, 2],
+				// Triangle 2
+				[1, 2, 3],
+
+			]
+
+		}
+
+		this.pipeline = regl({
+			attributes: {
+				position: rectangle.vertex_positions,
+				tex_coord: rectangle.vertex_tex_coordinates,
+			},
+			// Faces, as triplets of vertex indices
+			elements: rectangle.faces,
+
+			// Uniforms: global data available to the shader
+			uniforms: {
+				mat_mvp: regl.prop('mat_mvp'),
+				texture_base_color: regl.prop('tex_base_color'),
+			},
+
+			// TODO: check if blending is good or if parameters need adjusting
+			// https://learnopengl.com/Advanced-OpenGL/Blending
+			// https://github.com/regl-project/regl/blob/master/API.md#blending
+			// this adds background color to the texture --> lots of fire --> brighter
+			blend: {
+				enable: true,
+				func: {
+					srcRGB: 'src alpha',
+					srcAlpha: 'one',
+					dstRGB: 'one',
+					dstAlpha: 'one minus src alpha',
+				},
+				equation: {
+					rgb: 'add',
+					alpha: 'add',
+				},
+				color: [0, 0, 0, 0],
+			},
+
+			vert: resources['unshaded.vert.glsl'],
+			frag: resources['unshaded.frag.glsl'],
+		})
+
+		// Keep a reference to textures
+		this.resources = resources
+	}
+
+	render(frame_info, scene_info) {
+		/* 
+		We will collect all objects to draw with this pipeline into an array
+		and then run the pipeline on all of them.
+		This way the GPU does not need to change the active shader between objects.
+		*/
+		const entries_to_draw = []
+
+		// Read frame info
+		const { mat_projection, mat_view } = frame_info
+
+
+		// For each smoke particle, construct information needed to draw it using the pipeline
+		for (const particle of scene_info.smoke_particles) {
+
+			// Choose only smoke particle using this shader
+			if (particle.shader_type === 'unshaded') {
+				const mat_mvp = mat4.create()
+
+
+				entries_to_draw.push({
+					mat_mvp: mat4_matmul_many(mat_mvp, mat_projection, mat_view, particle.mat_model_to_world),
+					tex_base_color: this.resources[particle.texture_name],
+				})
+			}
+		}
+		// Draw on the GPU
+		this.pipeline(entries_to_draw)
+	}
+}

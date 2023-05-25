@@ -7,7 +7,7 @@ import { deg_to_rad, mat4_to_string, vec_to_string, mat4_matmul_many } from "./i
 import { icg_mesh_make_uv_sphere } from "./icg_mesh.js"
 import { SystemRenderGrid } from "./icg_grid.js"
 
-import { create_scene_content, FireParticlesMovement, FireParticlesRenderer, } from "./fire.js"
+import { create_scene_content, FireParticlesMovement, FireParticlesRenderer, SmokeParticlesRenderer, } from "./fire.js"
 
 
 async function load_resources(regl) {
@@ -89,6 +89,7 @@ async function main() {
 	const particles_movement = new FireParticlesMovement()
 
 	const fire_particles_renderer = new FireParticlesRenderer(regl, resources)
+	const smoke_particles_renderer = new SmokeParticlesRenderer(regl, resources)
 
 	const sys_render_grid = new SystemRenderGrid(regl, resources)
 
@@ -284,6 +285,7 @@ async function main() {
 		regl.clear({ color: [0, 0, 0, 1] });
 
 		fire_particles_renderer.render(frame_info, scene_info)
+		smoke_particles_renderer.render(frame_info, scene_info)
 
 		if (grid_on) {
 			sys_render_grid.render(frame_info, scene_info)
