@@ -41,6 +41,9 @@ async function load_resources(regl) {
 
 	const shaders_to_load = [
 		'unshaded.vert.glsl', 'unshaded.frag.glsl',
+		'noise.frag.glsl', 'noise.vert.glsl',
+		'buffer_to_screen.frag.glsl', 'buffer_to_screen.vert.glsl',
+		'display.vert.glsl', 
 		'phong.vert.glsl', 'phong.frag.glsl',
 		'earth.frag.glsl', 'sun.vert.glsl',
 		'billboard.vert.glsl', 'billboard_sunglow.frag.glsl',
@@ -74,6 +77,7 @@ async function main() {
 	// https://github.com/regl-project/regl/blob/master/API.md
 	const regl = createREGL({
 		profile: true, // if we want to measure the size of buffers/textures in memory
+		extensions: ['oes_texture_float'],
 	})
 	// The <canvas> (HTML element for drawing graphics) was created by REGL, lets take a handle to it.
 	const canvas_elem = document.getElementsByTagName('canvas')[0]

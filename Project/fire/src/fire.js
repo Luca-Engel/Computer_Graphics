@@ -1,5 +1,7 @@
 import { vec2, vec3, vec4, mat3, mat4 } from "../lib/gl-matrix_3.3.0/esm/index.js"
 import { mat4_matmul_many } from "./icg_math.js"
+import {init_noise} from "./noise.js"
+
 
 /*
 	Construct the scene!
@@ -278,6 +280,10 @@ export class SmokeParticlesRenderer {
 
 		}
 
+		const noise_textures = init_noise(regl, resources);
+
+		console.log(noise_textures);
+
 		this.pipeline = regl({
 			attributes: {
 				position: rectangle.vertex_positions,
@@ -289,7 +295,7 @@ export class SmokeParticlesRenderer {
 			// Uniforms: global data available to the shader
 			uniforms: {
 				mat_mvp: regl.prop('mat_mvp'),
-				texture_base_color: regl.prop('tex_base_color'),
+				texture_base_color: noise_textures[0], //regl.prop('tex_base_color'),
 			},
 
 			// TODO: check if blending is good or if parameters need adjusting
@@ -311,6 +317,8 @@ export class SmokeParticlesRenderer {
 				color: [0, 0, 0, 0],
 			},
 
+			// vert: resources['noise.vert.glsl'],
+			// frag: resources['noise.frag.glsl'],
 			vert: resources['unshaded.vert.glsl'],
 			frag: resources['unshaded.frag.glsl'],
 		})
