@@ -224,7 +224,9 @@ async function main() {
 
 	let prev_regl_time = 0
 
-	let delta_history = []
+	let time_elapsed = 0
+	let frames_counted = 0
+	let fps = 0
 
 	regl.frame((frame) => {
 
@@ -232,12 +234,15 @@ async function main() {
 
 
 		const dt = frame.time - prev_regl_time
-		delta_history.push(dt)
-		if (delta_history.length > 100) {
-			delta_history.shift()
-		}
 
-		const fps = (60 * 100) / delta_history.reduce((partialSum, a) => partialSum + a, 0)
+		time_elapsed += dt
+		frames_counted += 1
+
+		if (time_elapsed > 1.0) {
+			fps = frames_counted
+			frames_counted = 0
+			time_elapsed = 0
+		}
 
 		if (!is_paused) {
 			scene_info.sim_time += dt
@@ -300,7 +305,7 @@ async function main() {
 Hello! Sim time is ${scene_info.sim_time.toFixed(2)} s
 Camera: angle_z ${(frame_info.cam_angle_z / deg_to_rad).toFixed(1)}, angle_y ${(frame_info.cam_angle_y / deg_to_rad).toFixed(1)}, distance ${(frame_info.cam_distance_factor * cam_distance_base).toFixed(1)}
 cam pos ${vec_to_string(camera_position)}
-FPS ${fps.toFixed(2)}
+FPS ${fps}
 `;
 	})
 }
