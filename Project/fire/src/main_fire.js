@@ -40,21 +40,17 @@ async function load_resources(regl) {
 
 
 	const shaders_to_load = [
-		'unshaded.vert.glsl', 'unshaded.frag.glsl',
-		'phong.vert.glsl', 'phong.frag.glsl',
-		'earth.frag.glsl', 'sun.vert.glsl',
-		'billboard.vert.glsl', 'billboard_sunglow.frag.glsl',
+		'fire_particle.vert.glsl', 'fire_particle.frag.glsl',
+
+		// 'phong.vert.glsl', 'phong.frag.glsl',
+		// 'earth.frag.glsl', 'sun.vert.glsl',
+		// 'billboard.vert.glsl', 'billboard_sunglow.frag.glsl',
 	]
 	for (const shader_name of shaders_to_load) {
 		resource_promises[shader_name] = load_text(`./src/shaders/${shader_name}`)
 	}
 
 	const resources = {}
-
-	// Construct a unit sphere mesh
-	// UV sphere https://docs.blender.org/manual/en/latest/modeling/meshes/primitives.html#uv-sphere
-	// we create it in code instead of loading from a file
-	resources['mesh_uvsphere'] = icg_mesh_make_uv_sphere(15)
 
 	// Wait for all downloads to complete
 	for (const [key, promise] of Object.entries(resource_promises)) {
@@ -228,12 +224,22 @@ async function main() {
 
 	let prev_regl_time = 0
 
+	let delta_history = []
+
 	regl.frame((frame) => {
 
 		const { mat_view, mat_projection, mat_turntable, light_position_cam, light_position_world, camera_position } = frame_info
 
+
+		const dt = frame.time - prev_regl_time
+		delta_history.push(dt)
+		if (delta_history.length > 100) {
+			delta_history.shift()
+		}
+
+		const fps = (60 * 100) / delta_history.reduce((partialSum, a) => partialSum + a, 0)
+
 		if (!is_paused) {
-			const dt = frame.time - prev_regl_time
 			scene_info.sim_time += dt
 		}
 		frame_info.sim_time = scene_info.sim_time
@@ -294,6 +300,7 @@ async function main() {
 Hello! Sim time is ${scene_info.sim_time.toFixed(2)} s
 Camera: angle_z ${(frame_info.cam_angle_z / deg_to_rad).toFixed(1)}, angle_y ${(frame_info.cam_angle_y / deg_to_rad).toFixed(1)}, distance ${(frame_info.cam_distance_factor * cam_distance_base).toFixed(1)}
 cam pos ${vec_to_string(camera_position)}
+FPS ${fps.toFixed(2)}
 `;
 	})
 }

@@ -34,7 +34,7 @@ export function create_scene_content() {
 
 			// TODO: Change Texture here, change to flame texture, can also give an array of textures
 			texture_name: "sun.jpg",
-			shader_type: "unshaded",
+			shader_type: "fire_particle",
 		}
 		fire_particles.push(particle);
 
@@ -108,21 +108,16 @@ export class FireParticlesMovement {
 }
 
 /*
-	Draw the actors with 'unshaded' shader_type
+	Draw the particles with 'fire_particle' shader_type
 */
 export class FireParticlesRenderer {
 
 	constructor(regl, resources) {
-		//TODO: Change from sphere to billboard (will speed up rendering I hope), Hint: can see the 2D traiangle gneration in GL1 Exercise
-		const mesh_uvsphere = resources.mesh_uvsphere
-
 		const rectangle = {
 			vertex_positions: [
 				[-0.5, 0, -0.5],
 				[0.5, 0, - 0.5],
 				[-0.5, 0, 0.5],
-				// [0.5, -0.5, 0],
-				// [-0.5, 0.5, 0],
 				[0.5, 0, 0.5],
 			],
 			vertex_tex_coordinates: [
@@ -130,9 +125,6 @@ export class FireParticlesRenderer {
 				[0, 0],
 				[1, 0],
 				[0, 1],
-				// Triangle 2
-				// [1, 0],
-				// [0, 1],
 				[1, 1],
 			],
 			faces: [
@@ -178,8 +170,8 @@ export class FireParticlesRenderer {
 				color: [0, 0, 0, 0],
 			},
 
-			vert: resources['unshaded.vert.glsl'],
-			frag: resources['unshaded.frag.glsl'],
+			vert: resources['fire_particle.vert.glsl'],
+			frag: resources['fire_particle.frag.glsl'],
 		})
 
 		// Keep a reference to textures
@@ -202,7 +194,7 @@ export class FireParticlesRenderer {
 		for (const particle of scene_info.fire_particles) {
 
 			// Choose only planet using this shader
-			if (particle.shader_type === 'unshaded') {
+			if (particle.shader_type === 'fire_particle') {
 				const mat_mvp = mat4.create()
 
 				entries_to_draw.push({
