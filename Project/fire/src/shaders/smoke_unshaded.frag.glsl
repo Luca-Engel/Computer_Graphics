@@ -32,7 +32,7 @@ void main()
     // vec4 resultColor = color_from_texture * vec4(vec3(mask * strength), 1.0);
 	// gl_FragColor = color_from_texture;
 
-    if (color_from_texture.r + color_from_texture.g + color_from_texture.b < 1.) {
+    if (color_from_texture.r + color_from_texture.g + color_from_texture.b < 0.1) {
         discard;
     }
     
