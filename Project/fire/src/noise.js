@@ -112,9 +112,10 @@ void main() {
 
 	const noise_textures = [
 		// new NoiseTexture('1D plot', 'plots'),
-		new NoiseTexture('FBM', 'tex_fbm'),
-		new NoiseTexture('Perlin', 'tex_perlin'),
+		new NoiseTexture('Cloud', 'tex_cloud'),
 		new NoiseTexture('Turbulence', 'tex_turbulence'),
+		new NoiseTexture('Perlin', 'tex_perlin'),
+		new NoiseTexture('FBM', 'tex_fbm'),
 		new NoiseTexture('Map', 'tex_map'),
 		new NoiseTexture('Marble', 'tex_marble'),
 		new NoiseTexture('Wood', 'tex_wood'),

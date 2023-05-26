@@ -294,7 +294,7 @@ export class SmokeParticlesRenderer {
 		console.log("tex_buffer:")
 		console.log(smoke_tex_buffer);
 		this.smoke_tex_buffer = smoke_tex_buffer;
-		// framebuffer_to_image_download(regl, tex_buffer, `${smoke_texture.name}.png`);
+		// framebuffer_to_image_download(regl, smoke_tex_buffer, `${smoke_texture.name}.png`);
 
 		this.pipeline = regl({
 			attributes: {
@@ -307,7 +307,7 @@ export class SmokeParticlesRenderer {
 			// Uniforms: global data available to the shader
 			uniforms: {
 				mat_mvp: regl.prop('mat_mvp'),
-				texture_base_color: regl.prop('tex_base_color'),
+				// texture_base_color: regl.prop('tex_base_color'),
 				smoke_tex_buffer: smoke_tex_buffer,
 				// texture_base_color: frag_shader, //regl.prop('tex_base_color'),
 			},

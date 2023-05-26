@@ -2,7 +2,7 @@ precision mediump float;
 		
 varying vec2 v2f_tex_coord;
 
-uniform sampler2D texture_base_color;
+// uniform sampler2D texture_base_color;
 
 uniform sampler2D smoke_tex_buffer;
 
@@ -31,6 +31,11 @@ void main()
 	// Apply the Gaussian mask to the texture color
     // vec4 resultColor = color_from_texture * vec4(vec3(mask * strength), 1.0);
 	// gl_FragColor = color_from_texture;
+
+    if (color_from_texture.r + color_from_texture.g + color_from_texture.b < 1.) {
+        discard;
+    }
+    
 	gl_FragColor = color_from_texture; //solid_color;
 	
 
