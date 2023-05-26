@@ -282,13 +282,18 @@ export class SmokeParticlesRenderer {
 		}
 
 		const noise_textures = init_noise(regl, resources);
+
+		// TODO: pick the correct texture out of the list of textures...
 		const smoke_texture = noise_textures[0];
 		const frag_shader = smoke_texture.shader_frag;
 
 		console.log(frag_shader);
 
 		// The following code is used to save the texture to an image file
-		// const tex_buffer = smoke_texture.draw_texture_to_buffer([0,0], 5);
+		const smoke_tex_buffer = smoke_texture.draw_texture_to_buffer([0,0], 5);
+		console.log("tex_buffer:")
+		console.log(smoke_tex_buffer);
+		this.smoke_tex_buffer = smoke_tex_buffer;
 		// framebuffer_to_image_download(regl, tex_buffer, `${smoke_texture.name}.png`);
 
 		this.pipeline = regl({
@@ -303,6 +308,7 @@ export class SmokeParticlesRenderer {
 			uniforms: {
 				mat_mvp: regl.prop('mat_mvp'),
 				texture_base_color: regl.prop('tex_base_color'),
+				smoke_tex_buffer: smoke_tex_buffer,
 				// texture_base_color: frag_shader, //regl.prop('tex_base_color'),
 			},
 
@@ -327,8 +333,8 @@ export class SmokeParticlesRenderer {
 
 			// vert: resources['noise.vert.glsl'],
 			// frag: resources['noise.frag.glsl'],
-			vert: resources['unshaded.vert.glsl'],
-			frag: resources['unshaded.frag.glsl'],
+			vert: resources['smoke_unshaded.vert.glsl'],
+			frag: resources['smoke_unshaded.frag.glsl'],
 		})
 
 		// Keep a reference to textures
@@ -358,6 +364,7 @@ export class SmokeParticlesRenderer {
 				entries_to_draw.push({
 					mat_mvp: mat4_matmul_many(mat_mvp, mat_projection, mat_view, particle.mat_model_to_world),
 					tex_base_color: this.resources[particle.texture_name],
+					tex_noise_color: this.smoke_tex_buffer,
 				})
 			}
 		}

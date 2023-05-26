@@ -41,6 +41,7 @@ async function load_resources(regl) {
 
 	const shaders_to_load = [
 		'unshaded.vert.glsl', 'unshaded.frag.glsl',
+		'smoke_unshaded.frag.glsl', 'smoke_unshaded.vert.glsl',
 		'noise.frag.glsl', 'noise.vert.glsl',
 		'buffer_to_screen.frag.glsl', 'buffer_to_screen.vert.glsl',
 		'display.vert.glsl', 
