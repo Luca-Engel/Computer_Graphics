@@ -1,6 +1,7 @@
 import { vec2, vec3, vec4, mat3, mat4 } from "../lib/gl-matrix_3.3.0/esm/index.js"
 import { mat4_matmul_many } from "./icg_math.js"
 import {init_noise} from "./noise.js"
+import {framebuffer_to_image_download} from "./icg_screenshot.js"
 
 
 /*
@@ -281,8 +282,14 @@ export class SmokeParticlesRenderer {
 		}
 
 		const noise_textures = init_noise(regl, resources);
+		const smoke_texture = noise_textures[0];
+		const frag_shader = smoke_texture.shader_frag;
 
-		console.log(noise_textures);
+		console.log(frag_shader);
+
+		// The following code is used to save the texture to an image file
+		// const tex_buffer = smoke_texture.draw_texture_to_buffer([0,0], 5);
+		// framebuffer_to_image_download(regl, tex_buffer, `${smoke_texture.name}.png`);
 
 		this.pipeline = regl({
 			attributes: {
@@ -295,7 +302,8 @@ export class SmokeParticlesRenderer {
 			// Uniforms: global data available to the shader
 			uniforms: {
 				mat_mvp: regl.prop('mat_mvp'),
-				texture_base_color: noise_textures[0], //regl.prop('tex_base_color'),
+				texture_base_color: regl.prop('tex_base_color'),
+				// texture_base_color: frag_shader, //regl.prop('tex_base_color'),
 			},
 
 			// TODO: check if blending is good or if parameters need adjusting
