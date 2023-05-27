@@ -14,6 +14,7 @@ export function create_scene_content() {
 	const fire_particles = []
 	const smoke_particles = [];
 
+	// TODO: Tune the number of particles (5000 is good!)
 	for (let index = 0; index < 5000; index++) {
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
 		const particle = {
@@ -80,9 +81,10 @@ export function create_scene_content() {
 	}
 }
 
-export class FireParticlesMovement {
+export class ParticlesMovement {
 
 	constructor() {
+
 	}
 
 	calculate_model_matrix(particle, sim_time, camera_position) {
@@ -98,15 +100,10 @@ export class FireParticlesMovement {
 		const angle_to_camera = vec3.angle(normal, vec_to_camera);
 		mat4.fromRotation(M_rotate, angle_to_camera, rot_axis);
 
-		// console.log(camera_position)
-		// console.log(this.mat_model_to_world)
-
-
 
 		let initial_position_transform = mat4.fromTranslation(mat4.create(), particle.start_position)
 		let particle_time = sim_time % particle.lifetime;
 
-		// console.log(vec3.multiply(vec3.fromValues(particle_time, particle_time, particle_time), vec3.fromValues(particle_time, particle_time, particle_time)))
 		let displacement = vec3.fromValues(particle_time * particle.velocity_x, particle_time * particle.velocity_y, particle_time * particle.velocity_z)
 		let movement_transform = mat4.fromTranslation(mat4.create(), displacement)
 
@@ -137,6 +134,7 @@ export class FireParticlesMovement {
 	}
 
 }
+
 
 /*
 	Draw the actors with 'unshaded' shader_type
@@ -294,8 +292,6 @@ export class SmokeParticlesRenderer {
 
 		// The following code is used to save the texture to an image file
 		const smoke_tex_buffer = smoke_texture.draw_texture_to_buffer([0,0], 5);
-		console.log("tex_buffer:")
-		console.log(smoke_tex_buffer);
 		this.smoke_tex_buffer = smoke_tex_buffer;
 		// framebuffer_to_image_download(regl, smoke_tex_buffer, `${smoke_texture.name}.png`);
 
