@@ -15,7 +15,7 @@ export function create_scene_content() {
 	const smoke_particles = [];
 
 	// TODO: Tune the number of particles (5000 is good!)
-	for (let index = 0; index < 500; index++) {
+	for (let index = 0; index < 1000; index++) {
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
 		const particle = {
 			lifetime: 2 * Math.random(),
