@@ -14,16 +14,16 @@ export function create_scene_content() {
 	const fire_particles = []
 	const smoke_particles = [];
 
-	for (let index = 0; index < 100; index++) {
+	for (let index = 0; index < 5000; index++) {
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
 		const particle = {
 			lifetime: 2 * Math.random(),
-			size: 0.03 * Math.random() + 0.01,
+			size: 0.003 * Math.random() + 0.01,
 
 			// TODO: Tune particle starting position using perline noise etc
 			start_position: vec3.fromValues(
-				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 3,
-				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 3,
+				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 2,
+				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 2,
 				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
 			),
 			// velocity: vec3.fromValues(
@@ -34,7 +34,7 @@ export function create_scene_content() {
 			// TODO: Tune particle movement direction using perline noise etc
 			velocity_x: 0.025 * Math.random() - 0.0125,
 			velocity_y: 0.025 * Math.random() - 0.0125,
-			velocity_z: 0.1 * Math.random(),
+			velocity_z: 0.07 * Math.random(),
 
 			// TODO: Change Texture here, change to flame texture, can also give an array of textures
 			texture_name: "sun.jpg",
@@ -47,17 +47,20 @@ export function create_scene_content() {
 			lifetime: 2 * Math.random(),
 			size: 0.03 * Math.random() + 0.01,
 			start_position: vec3.fromValues(
-				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 3,
-				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 3,
+				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
+				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
 				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
 			),
 			velocity_x: 0.025 * Math.random() - 0.0125,
 			velocity_y: 0.025 * Math.random() - 0.0125,
 			velocity_z: 0.1 * Math.random(),
-			texture_name: "moon.jpg",
+			// texture_name: "moon.jpg",
 			shader_type: "unshaded",
 		};
-		smoke_particles.push(smoke_particle);
+		if (index % 10 == 0) {
+			smoke_particles.push(smoke_particle);
+		}
+		// smoke_particles.push(smoke_particle);
 	}
 
 	// In each particle, allocate its transformation matrix
