@@ -15,7 +15,7 @@ export function create_scene_content() {
 	const smoke_particles = [];
 
 	// TODO: Tune the number of particles (5000 is good!)
-	for (let index = 0; index < 5000; index++) {
+	for (let index = 0; index < 500; index++) {
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
 		const particle = {
 			lifetime: 2 * Math.random(),
@@ -226,8 +226,13 @@ export class FireParticlesRenderer {
 		// Read frame info
 		const { mat_projection, mat_view } = frame_info
 
+		scene_info.fire_particles.sort(function(a, b) {
+			const distance_a = vec3.distance(a.start_position, frame_info.camera_position);
+			const distance_b = vec3.distance(b.start_position, frame_info.camera_position);
+			return distance_b - distance_a;
+		  });
 
-		// For each planet, construct information needed to draw it using the pipeline
+		// For each particle, construct information needed to draw it using the pipeline
 		for (const particle of scene_info.fire_particles) {
 
 			// Choose only planet using this shader
