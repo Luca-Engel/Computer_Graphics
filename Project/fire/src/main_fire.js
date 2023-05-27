@@ -3,12 +3,13 @@ import { createREGL } from "../lib/regljs_2.1.0/regl.module.js"
 import { vec2, vec3, vec4, mat3, mat4 } from "../lib/gl-matrix_3.3.0/esm/index.js"
 
 import { DOM_loaded_promise, load_text, load_texture, register_keyboard_action } from "./icg_web.js"
+import {icg_mesh_load_obj} from "./icg_mesh.js"
 import { deg_to_rad, mat4_to_string, vec_to_string, mat4_matmul_many } from "./icg_math.js"
 import { icg_mesh_make_uv_sphere } from "./icg_mesh.js"
 import { SystemRenderGrid } from "./icg_grid.js"
 
-import { create_scene_content, ParticlesMovement, ParticlesRenderer, } from "./fire.js"
-
+import { create_scene_content, ParticlesMovement, ParticlesRenderer, SysRenderRocksUnshaded,} from "./fire.js"
+import { mesh_preprocess } from "./normal_computation.js"
 
 async function load_resources(regl) {
 	/*
@@ -41,7 +42,7 @@ async function load_resources(regl) {
 
 	const shaders_to_load = [
 		'unshaded.vert.glsl', 'unshaded.frag.glsl',
-		'smoke_unshaded.frag.glsl', 'smoke_unshaded.vert.glsl',
+		'stones_unshaded.frag.glsl', 'stones_unshaded.vert.glsl',
 		'noise.frag.glsl', 'noise.vert.glsl',
 		'buffer_to_screen.frag.glsl', 'buffer_to_screen.vert.glsl',
 		'display.vert.glsl', 
@@ -51,6 +52,14 @@ async function load_resources(regl) {
 	]
 	for (const shader_name of shaders_to_load) {
 		resource_promises[shader_name] = load_text(`./src/shaders/${shader_name}`)
+	}
+
+	// load meshes
+	const meshes_to_load = [
+		"rocks.obj"
+	]
+	for(const mesh_name of meshes_to_load) {
+		resource_promises[mesh_name] = icg_mesh_load_obj(`./meshes/${mesh_name}`)
 	}
 
 	const resources = {}
@@ -63,6 +72,10 @@ async function load_resources(regl) {
 	// Wait for all downloads to complete
 	for (const [key, promise] of Object.entries(resource_promises)) {
 		resources[key] = await promise
+	}
+
+	for(const mesh_name of meshes_to_load) {
+		resources[mesh_name] = mesh_preprocess(regl, resources[mesh_name])
 	}
 
 	return resources
@@ -96,6 +109,10 @@ async function main() {
 	const particles_renderer = new ParticlesRenderer(regl, resources)
 
 	const sys_render_grid = new SystemRenderGrid(regl, resources)
+
+	// mesh rendering:
+	const sys_render_rocks_unshaded = new SysRenderRocksUnshaded(regl, resources)
+	
 
 
 
@@ -289,6 +306,11 @@ async function main() {
 		regl.clear({ color: [0, 0, 0, 1] });
 
 		particles_renderer.render(frame_info, scene_info)
+
+
+
+		sys_render_rocks_unshaded.render(frame_info, scene_info)
+
 
 		if (grid_on) {
 			sys_render_grid.render(frame_info, scene_info)

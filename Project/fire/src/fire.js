@@ -64,6 +64,38 @@ export function create_scene_content() {
 		// smoke_particles.push(smoke_particle);
 	}
 
+
+
+
+	const actors = [
+		{
+			name: 'firepit_rocks',
+			size: 0.1,
+			rotation_speed: 0.1,
+
+			movement_type: 'planet',
+			orbit: null,
+
+			shader_type: 'unshaded',
+			texture_name: 'moon.jpg',
+		},
+	]
+	// In each rock, allocate its transformation matrix
+	for (const actor of actors) {
+		actor.mat_model_to_world = mat4.create()
+	}
+
+	// Lookup of actors by name
+	const actors_by_name = {}
+	for (const actor of actors) {
+		actors_by_name[actor.name] = actor
+	}
+
+
+
+
+
+
 	// In each particle, allocate its transformation matrix
 	for (const particle of fire_particles) {
 		particle.mat_model_to_world = mat4.create()
@@ -76,6 +108,7 @@ export function create_scene_content() {
 	// Construct scene info
 	return {
 		sim_time: 0.,
+		actors: actors,
 		fire_particles: fire_particles,
 		smoke_particles: smoke_particles,
 	}
@@ -277,3 +310,79 @@ export class ParticlesRenderer {
 		this.pipeline(entries_to_draw)
 	}
 }
+
+
+
+
+
+
+
+
+// mesh renderer:
+/*
+	Draw the actors with 'unshaded' shader_type
+*/
+export class SysRenderRocksUnshaded {
+
+	constructor(regl, resources) {
+
+		const mesh_uvsphere = resources['rocks.obj']
+		// const mesh_uvsphere = resources.mesh_uvsphere;
+
+		this.pipeline = regl({
+			attributes: {
+				position: mesh_uvsphere.vertex_positions,
+				tex_coord: mesh_uvsphere.vertex_tex_coords,
+			},
+			// Faces, as triplets of vertex indices
+			elements: mesh_uvsphere.faces,
+
+			// Uniforms: global data available to the shader
+			uniforms: {
+				mat_mvp: regl.prop('mat_mvp'),
+				texture_base_color: regl.prop('tex_base_color'),
+			},
+
+			vert: resources['stones_unshaded.vert.glsl'],
+			frag: resources['stones_unshaded.frag.glsl'],
+		})
+
+		// Keep a reference to textures
+		this.resources = resources
+	}
+
+	render(frame_info, scene_info) {
+		/* 
+		We will collect all objects to draw with this pipeline into an array
+		and then run the pipeline on all of them.
+		This way the GPU does not need to change the active shader between objects.
+		*/
+		const entries_to_draw = []
+
+		// Read frame info
+		const { mat_projection, mat_view } = frame_info
+
+		// For each planet, construct information needed to draw it using the pipeline
+		for (const actor of scene_info.actors) {
+
+			// Choose only planet using this shader
+			if (actor.shader_type === 'unshaded') {
+
+				const mat_mvp = mat4.create()
+
+				// #TODO GL1.2.1.2
+				// Calculate mat_mvp: model-view-projection matrix	
+				//mat4_matmul_many(mat_mvp, ...)
+
+				entries_to_draw.push({
+					mat_mvp: mat4_matmul_many(mat_mvp, mat_projection, mat_view, actor.mat_model_to_world),
+					tex_base_color: this.resources[actor.texture_name],
+				})
+			}
+		}
+
+		// Draw on the GPU
+		this.pipeline(entries_to_draw)
+	}
+}
+
