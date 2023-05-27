@@ -139,7 +139,7 @@ export class ParticlesMovement {
 /*
 	Draw the actors with 'unshaded' shader_type
 */
-export class FireParticlesRenderer {
+export class ParticlesRenderer {
 
 	constructor(regl, resources) {
 		//TODO: Change from sphere to billboard (will speed up rendering I hope), Hint: can see the 2D traiangle gneration in GL1 Exercise
@@ -174,6 +174,16 @@ export class FireParticlesRenderer {
 
 		}
 
+		// Create a list of noise textures for the smoke:
+		const noise_textures = init_noise(regl, resources);
+
+		// TODO: pick the correct texture out of the list of textures...
+		const smoke_texture = noise_textures[0];
+
+		// The following code is used to save the texture to an image file
+		this.smoke_tex_buffer = smoke_texture.draw_texture_to_buffer([0,0], 5);
+
+
 		this.pipeline = regl({
 			attributes: {
 				position: rectangle.vertex_positions,
@@ -186,6 +196,8 @@ export class FireParticlesRenderer {
 			uniforms: {
 				mat_mvp: regl.prop('mat_mvp'),
 				texture_base_color: regl.prop('tex_base_color'),
+				is_smoke_particle: regl.prop('is_smoke_particle'),
+				smoke_tex_buffer: this.smoke_tex_buffer,
 			},
 
 			// TODO: check if blending is good or if parameters need adjusting
@@ -226,149 +238,38 @@ export class FireParticlesRenderer {
 		// Read frame info
 		const { mat_projection, mat_view } = frame_info
 
-		scene_info.fire_particles.sort(function(a, b) {
+		
+
+		const particles = scene_info.fire_particles.concat(scene_info.smoke_particles);
+		particles.sort(function(a, b) {
 			const distance_a = vec3.distance(a.start_position, frame_info.camera_position);
 			const distance_b = vec3.distance(b.start_position, frame_info.camera_position);
 			return distance_b - distance_a;
 		  });
 
 		// For each particle, construct information needed to draw it using the pipeline
-		for (const particle of scene_info.fire_particles) {
+		for (const particle of particles) { //scene_info.fire_particles) {
 
 			// Choose only planet using this shader
 			if (particle.shader_type === 'unshaded') {
+
 				const mat_mvp = mat4.create()
+
+				let texture_name = this.resources[particle.texture_name];
+				let is_smoke_particle = false;
+
+				// If the particle is a smoke particle, then we need to use the smoke texture
+				if(particle.texture_name === undefined) {
+					// the texture name just needs to be something so that it is not undefined
+					// but is not used by the fragment shader if the particle is a smoke particle
+					texture_name = this.resources["moon.jpg"];
+					is_smoke_particle = true;
+				}
 
 				entries_to_draw.push({
 					mat_mvp: mat4_matmul_many(mat_mvp, mat_projection, mat_view, particle.mat_model_to_world),
-					tex_base_color: this.resources[particle.texture_name],
-				})
-			}
-		}
-		// Draw on the GPU
-		this.pipeline(entries_to_draw)
-	}
-}
-
-
-
-export class SmokeParticlesRenderer {
-
-	constructor(regl, resources) {
-		//TODO: Change from sphere to billboard (will speed up rendering I hope), Hint: can see the 2D traiangle gneration in GL1 Exercise
-		const mesh_uvsphere = resources.mesh_uvsphere
-
-		const rectangle = {
-			vertex_positions: [
-				[-0.5, 0, -0.5],
-				[0.5, 0, - 0.5],
-				[-0.5, 0, 0.5],
-				// [0.5, -0.5, 0],
-				// [-0.5, 0.5, 0],
-				[0.5, 0, 0.5],
-			],
-			vertex_tex_coordinates: [
-				// Triangle 1
-				[0, 0],
-				[1, 0],
-				[0, 1],
-				// Triangle 2
-				// [1, 0],
-				// [0, 1],
-				[1, 1],
-			],
-			faces: [
-				// Triangle 1
-				[0, 1, 2],
-				// Triangle 2
-				[1, 2, 3],
-
-			]
-
-		}
-
-		const noise_textures = init_noise(regl, resources);
-
-		// TODO: pick the correct texture out of the list of textures...
-		const smoke_texture = noise_textures[0];
-		const frag_shader = smoke_texture.shader_frag;
-
-		console.log(frag_shader);
-
-		// The following code is used to save the texture to an image file
-		const smoke_tex_buffer = smoke_texture.draw_texture_to_buffer([0,0], 5);
-		this.smoke_tex_buffer = smoke_tex_buffer;
-		// framebuffer_to_image_download(regl, smoke_tex_buffer, `${smoke_texture.name}.png`);
-
-		this.pipeline = regl({
-			attributes: {
-				position: rectangle.vertex_positions,
-				tex_coord: rectangle.vertex_tex_coordinates,
-			},
-			// Faces, as triplets of vertex indices
-			elements: rectangle.faces,
-
-			// Uniforms: global data available to the shader
-			uniforms: {
-				mat_mvp: regl.prop('mat_mvp'),
-				// texture_base_color: regl.prop('tex_base_color'),
-				smoke_tex_buffer: smoke_tex_buffer,
-				// texture_base_color: frag_shader, //regl.prop('tex_base_color'),
-			},
-
-			// TODO: check if blending is good or if parameters need adjusting
-			// https://learnopengl.com/Advanced-OpenGL/Blending
-			// https://github.com/regl-project/regl/blob/master/API.md#blending
-			// this adds background color to the texture --> lots of fire --> brighter
-			blend: {
-				enable: true,
-				func: {
-					srcRGB: 'src alpha',
-					srcAlpha: 'one',
-					dstRGB: 'one',
-					dstAlpha: 'one minus src alpha',
-				},
-				equation: {
-					rgb: 'add',
-					alpha: 'add',
-				},
-				color: [0, 0, 0, 0],
-			},
-
-			// vert: resources['noise.vert.glsl'],
-			// frag: resources['noise.frag.glsl'],
-			vert: resources['smoke_unshaded.vert.glsl'],
-			frag: resources['smoke_unshaded.frag.glsl'],
-		})
-
-		// Keep a reference to textures
-		this.resources = resources
-	}
-
-	render(frame_info, scene_info) {
-		/* 
-		We will collect all objects to draw with this pipeline into an array
-		and then run the pipeline on all of them.
-		This way the GPU does not need to change the active shader between objects.
-		*/
-		const entries_to_draw = []
-
-		// Read frame info
-		const { mat_projection, mat_view } = frame_info
-
-
-		// For each smoke particle, construct information needed to draw it using the pipeline
-		for (const particle of scene_info.smoke_particles) {
-
-			// Choose only smoke particle using this shader
-			if (particle.shader_type === 'unshaded') {
-				const mat_mvp = mat4.create()
-
-
-				entries_to_draw.push({
-					mat_mvp: mat4_matmul_many(mat_mvp, mat_projection, mat_view, particle.mat_model_to_world),
-					tex_base_color: this.resources[particle.texture_name],
-					tex_noise_color: this.smoke_tex_buffer,
+					tex_base_color: texture_name,
+					is_smoke_particle: is_smoke_particle,
 				})
 			}
 		}
