@@ -14,6 +14,7 @@ export function create_scene_content() {
 	var offset_x = 0;
 	var offset_y = 0;
 	var push_next_10 = true;
+	var texture_name = "sun.jpg";
 
 	const fire_particles = [];
 	const smoke_particles = [];
@@ -23,18 +24,23 @@ export function create_scene_content() {
 		if (index % 5 == 0) {
 			offset_x = 0;
 			offset_y = 0;
+			texture_name = "sun.jpg";
 		} else if (index % 5 == 1) {
 			offset_x = offset;
 			offset_y = offset;
+			texture_name = "magic_green.jpg";
 		} else if (index % 5 == 2) {
 			offset_x = offset;
 			offset_y = -offset;
+			texture_name = "magic_green.jpg";
 		} else if (index % 5 == 3) {
 			offset_x = -offset;
 			offset_y = offset;
+			texture_name = "magic_green.jpg";
 		} else {
 			offset_x = -offset;
 			offset_y = -offset;
+			texture_name = "magic_green.jpg";
 		}
 
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
@@ -59,7 +65,7 @@ export function create_scene_content() {
 			velocity_z: 0.07 * Math.random(),
 
 			// TODO: Change Texture here, change to flame texture, can also give an array of textures
-			texture_name: "sun.jpg",
+			texture_name: texture_name,
 			shader_type: "unshaded",
 		}
 		fire_particles.push(particle);

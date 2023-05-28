@@ -32,7 +32,7 @@ async function load_resources(regl) {
 	const resource_promises = {}
 
 	const textures_to_load = [
-		'sun.jpg', 'moon.jpg', 'mars.jpg', 'flame.jpg', 'flame2.jpg', 'earth_clouds.jpg', 'rocks.jpg',
+		'sun.jpg', 'moon.jpg', 'mars.jpg', 'magic_green.jpg', 'flame.jpg', 'flame2.jpg', 'earth_clouds.jpg', 'earth_day.jpg', 'rocks.jpg',
 	]
 	for (const tex_name of textures_to_load) {
 		resource_promises[tex_name] = load_texture(regl, `./textures/${tex_name}`)
