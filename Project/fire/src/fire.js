@@ -19,13 +19,11 @@ export function create_scene_content() {
 	const fire_particles = [];
 	const smoke_particles = [];
 
-	// TODO: Tune the number of particles (5000 is good!)
 	for (let index = 0; index < 1500; index++) {
-		// middle one should be the brightetst
-		let offset_x, offset_y, texture_name;
 
+		let offset_x, offset_y, texture_name;
 		switch (index % 6) {
-			case 0:
+			case 0: // more particles in the middle for asthetic reasons
 			case 1:
 				offset_x = 0;
 				offset_y = 0;
@@ -54,7 +52,7 @@ export function create_scene_content() {
 		}
 
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
-		const particle = {
+		const fire_particle = {
 			lifetime: 2 * Math.random(),
 			size: 0.003 * Math.random() + 0.01,
 
@@ -78,27 +76,31 @@ export function create_scene_content() {
 			texture_name: texture_name,
 			shader_type: "unshaded",
 		}
-		fire_particles.push(particle);
+		fire_particles.push(fire_particle);
 
-
-		const smoke_particle = {
-			lifetime: 2 * Math.random(),
-			size: 0.03 * Math.random() + 0.01,
-			start_position: vec3.fromValues(
-				offset_x + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
-				offset_y + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
-				(0.1 + diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
-			),
-			velocity_x: 0.025 * Math.random() - 0.0125,
-			velocity_y: 0.025 * Math.random() - 0.0125,
-			velocity_z: 0.1 * Math.random(),
-			// texture_name: "moon.jpg",
-			shader_type: "unshaded",
-		};
-		if (push_next_10 && index % 10 == 0 || !push_next_10 && index % 30 == 0) {
+		// only draw 1/3 times as many smoke particles as fire particles but the 
+		// same amount for each fire place
+		if ((push_next_10 && index % 10 == 0) // always draw 10 smoke particles in a row (2 times per fire place)
+			|| (!push_next_10 && index % 30 == 0)) { // then wait 20 particles
 			push_next_10 = !push_next_10;
 		}
+
 		if (push_next_10) {
+			const smoke_particle = {
+				lifetime: 2 * Math.random(),
+				size: 0.03 * Math.random() + 0.01,
+				start_position: vec3.fromValues(
+					offset_x + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
+					offset_y + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
+					(0.1 + diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
+				),
+				velocity_x: 0.025 * Math.random() - 0.0125,
+				velocity_y: 0.025 * Math.random() - 0.0125,
+				velocity_z: 0.1 * Math.random(),
+				// texture_name: "moon.jpg",
+				shader_type: "unshaded",
+			};
+
 			smoke_particles.push(smoke_particle);
 		}
 	}
