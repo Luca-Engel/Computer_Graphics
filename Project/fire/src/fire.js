@@ -25,7 +25,7 @@ export function create_scene_content() {
 			start_position: vec3.fromValues(
 				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 2,
 				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 2,
-				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
+				(0.1 + diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
 			),
 			// velocity: vec3.fromValues(
 			// 	0.02 * Math.random() - 0.01,
@@ -50,7 +50,7 @@ export function create_scene_content() {
 			start_position: vec3.fromValues(
 				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
 				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
-				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
+				(0.1 + diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
 			),
 			velocity_x: 0.025 * Math.random() - 0.0125,
 			velocity_y: 0.025 * Math.random() - 0.0125,
@@ -77,7 +77,7 @@ export function create_scene_content() {
 			orbit: null,
 
 			shader_type: 'unshaded',
-			texture_name: 'moon.jpg',
+			texture_name: 'rocks.jpg',
 		},
 	]
 	// In each rock, allocate its transformation matrix
