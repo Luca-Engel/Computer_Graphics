@@ -8,14 +8,35 @@ import {framebuffer_to_image_download} from "./icg_screenshot.js"
 	Construct the scene!
 */
 export function create_scene_content() {
-	var diameterAroundCenter = 0.1
-	var halfDiameterAroundCenter = diameterAroundCenter / 2
+	var diameterAroundCenter = 0.1;
+	var halfDiameterAroundCenter = diameterAroundCenter / 2;
+	var offset = 0.3;
+	var offset_x = 0;
+	var offset_y = 0;
+	var push_next_10 = true;
 
-	const fire_particles = []
+	const fire_particles = [];
 	const smoke_particles = [];
 
 	// TODO: Tune the number of particles (5000 is good!)
 	for (let index = 0; index < 1000; index++) {
+		if (index % 5 == 0) {
+			offset_x = 0;
+			offset_y = 0;
+		} else if (index % 5 == 1) {
+			offset_x = offset;
+			offset_y = offset;
+		} else if (index % 5 == 2) {
+			offset_x = offset;
+			offset_y = -offset;
+		} else if (index % 5 == 3) {
+			offset_x = -offset;
+			offset_y = offset;
+		} else {
+			offset_x = -offset;
+			offset_y = -offset;
+		}
+
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
 		const particle = {
 			lifetime: 2 * Math.random(),
@@ -23,8 +44,8 @@ export function create_scene_content() {
 
 			// TODO: Tune particle starting position using perline noise etc
 			start_position: vec3.fromValues(
-				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 2,
-				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 2,
+				offset_x + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 2,
+				offset_y + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 2,
 				(0.1 + diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
 			),
 			// velocity: vec3.fromValues(
@@ -48,8 +69,8 @@ export function create_scene_content() {
 			lifetime: 2 * Math.random(),
 			size: 0.03 * Math.random() + 0.01,
 			start_position: vec3.fromValues(
-				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
-				(diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
+				offset_x + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
+				offset_y + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
 				(0.1 + diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
 			),
 			velocity_x: 0.025 * Math.random() - 0.0125,
@@ -59,9 +80,11 @@ export function create_scene_content() {
 			shader_type: "unshaded",
 		};
 		if (index % 10 == 0) {
+			push_next_10 = !push_next_10;
+		}
+		if (push_next_10) {
 			smoke_particles.push(smoke_particle);
 		}
-		// smoke_particles.push(smoke_particle);
 	}
 
 
@@ -319,23 +342,43 @@ export class ParticlesRenderer {
 
 
 // mesh renderer:
+export class FirePlacesRendererUnshaded {
+
+	constructor(regl, resources) {
+
+		const rock_renderers = [
+			new SysRenderRocksUnshaded(regl, resources, 'rocks1.obj'),
+			new SysRenderRocksUnshaded(regl, resources, 'rocks2.obj'),
+			new SysRenderRocksUnshaded(regl, resources, 'rocks3.obj'),
+			new SysRenderRocksUnshaded(regl, resources, 'rocks4.obj'),
+			new SysRenderRocksUnshaded(regl, resources, 'rocks5.obj'),
+		];
+
+		this.rock_renderers = rock_renderers;
+	}
+
+	render(frame_info, scene_info) {
+		for (const rock_renderer of this.rock_renderers) {
+			rock_renderer.render(frame_info, scene_info);
+		}
+		
+	}
+}
 /*
 	Draw the actors with 'unshaded' shader_type
 */
 export class SysRenderRocksUnshaded {
 
-	constructor(regl, resources) {
+	constructor(regl, resources, rock_mesh_name) {
 
-		const mesh_uvsphere = resources['rocks.obj']
-		// const mesh_uvsphere = resources.mesh_uvsphere;
-
+		const rock_mesh = resources[rock_mesh_name];
 		this.pipeline = regl({
 			attributes: {
-				position: mesh_uvsphere.vertex_positions,
-				tex_coord: mesh_uvsphere.vertex_tex_coords,
+				position: rock_mesh.vertex_positions,
+				tex_coord: rock_mesh.vertex_tex_coords,
 			},
 			// Faces, as triplets of vertex indices
-			elements: mesh_uvsphere.faces,
+			elements: rock_mesh.faces,
 
 			// Uniforms: global data available to the shader
 			uniforms: {

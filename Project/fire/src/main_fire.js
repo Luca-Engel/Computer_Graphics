@@ -8,7 +8,7 @@ import { deg_to_rad, mat4_to_string, vec_to_string, mat4_matmul_many } from "./i
 import { icg_mesh_make_uv_sphere } from "./icg_mesh.js"
 import { SystemRenderGrid } from "./icg_grid.js"
 
-import { create_scene_content, ParticlesMovement, ParticlesRenderer, SysRenderRocksUnshaded,} from "./fire.js"
+import { create_scene_content, FirePlacesRendererUnshaded, ParticlesMovement, ParticlesRenderer, SysRenderRocksUnshaded,} from "./fire.js"
 import { mesh_preprocess } from "./normal_computation.js"
 
 async function load_resources(regl) {
@@ -56,7 +56,7 @@ async function load_resources(regl) {
 
 	// load meshes
 	const meshes_to_load = [
-		"rocks.obj"
+		"rocks1.obj", "rocks2.obj", "rocks3.obj", "rocks4.obj", "rocks5.obj",
 	]
 	for(const mesh_name of meshes_to_load) {
 		resource_promises[mesh_name] = icg_mesh_load_obj(`./meshes/${mesh_name}`)
@@ -111,7 +111,7 @@ async function main() {
 	const sys_render_grid = new SystemRenderGrid(regl, resources)
 
 	// mesh rendering:
-	const sys_render_rocks_unshaded = new SysRenderRocksUnshaded(regl, resources)
+	const sys_render_rocks_unshaded = new FirePlacesRendererUnshaded(regl, resources); //new SysRenderRocksUnshaded(regl, resources)
 	
 
 
