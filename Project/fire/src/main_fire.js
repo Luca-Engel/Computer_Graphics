@@ -305,10 +305,8 @@ async function main() {
 		// Set the whole image to black
 		regl.clear({ color: [0, 0, 0, 1] });
 
+		// If we invert it, the 		
 		particles_renderer.render(frame_info, scene_info)
-
-
-
 		sys_render_rocks_unshaded.render(frame_info, scene_info)
 
 
