@@ -20,7 +20,7 @@ export function create_scene_content() {
 	const smoke_particles = [];
 
 	// TODO: Tune the number of particles (5000 is good!)
-	for (let index = 0; index < 1000; index++) {
+	for (let index = 0; index < 1500; index++) {
 		// middle one should be the brightetst
 		if (index % 6 == 0 || index % 6 == 1) {
 			offset_x = 0;
@@ -86,7 +86,7 @@ export function create_scene_content() {
 			// texture_name: "moon.jpg",
 			shader_type: "unshaded",
 		};
-		if (push_next_10 && index % 10 == 0 || !push_next_10 && index % 20 == 0) {
+		if (push_next_10 && index % 10 == 0 || !push_next_10 && index % 30 == 0) {
 			push_next_10 = !push_next_10;
 		}
 		if (push_next_10) {
