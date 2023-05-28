@@ -22,26 +22,35 @@ export function create_scene_content() {
 	// TODO: Tune the number of particles (5000 is good!)
 	for (let index = 0; index < 1500; index++) {
 		// middle one should be the brightetst
-		if (index % 6 == 0 || index % 6 == 1) {
-			offset_x = 0;
-			offset_y = 0;
-			texture_name = "sun.jpg";
-		} else if (index % 6 == 2) {
-			offset_x = offset;
-			offset_y = offset;
-			texture_name = "magic_green.jpg";
-		} else if (index % 6 == 3) {
-			offset_x = offset;
-			offset_y = -offset;
-			texture_name = "magic_green.jpg";
-		} else if (index % 6 == 4) {
-			offset_x = -offset;
-			offset_y = offset;
-			texture_name = "magic_green.jpg";
-		} else { // index % 6 == 5
-			offset_x = -offset;
-			offset_y = -offset;
-			texture_name = "magic_green.jpg";
+		let offset_x, offset_y, texture_name;
+
+		switch (index % 6) {
+			case 0:
+			case 1:
+				offset_x = 0;
+				offset_y = 0;
+				texture_name = "sun.jpg";
+				break;
+			case 2:
+				offset_x = offset;
+				offset_y = offset;
+				texture_name = "magic_green.jpg";
+				break;
+			case 3:
+				offset_x = offset;
+				offset_y = -offset;
+				texture_name = "magic_green.jpg";
+				break;
+			case 4:
+				offset_x = -offset;
+				offset_y = offset;
+				texture_name = "magic_green.jpg";
+				break;
+			case 5:
+				offset_x = -offset;
+				offset_y = -offset;
+				texture_name = "magic_green.jpg";
+				break;
 		}
 
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
