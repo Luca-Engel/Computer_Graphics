@@ -10,7 +10,7 @@ import {framebuffer_to_image_download} from "./icg_screenshot.js"
 export function create_scene_content() {
 	var diameterAroundCenter = 0.1;
 	var halfDiameterAroundCenter = diameterAroundCenter / 2;
-	var offset = 0.3;
+	var offset = 0.1;
 	var offset_x = 0;
 	var offset_y = 0;
 	var push_next_10 = true;
@@ -21,23 +21,24 @@ export function create_scene_content() {
 
 	// TODO: Tune the number of particles (5000 is good!)
 	for (let index = 0; index < 1000; index++) {
-		if (index % 5 == 0) {
+		// middle one should be the brightetst
+		if (index % 6 == 0 || index % 6 == 1) {
 			offset_x = 0;
 			offset_y = 0;
 			texture_name = "sun.jpg";
-		} else if (index % 5 == 1) {
+		} else if (index % 6 == 2) {
 			offset_x = offset;
 			offset_y = offset;
 			texture_name = "magic_green.jpg";
-		} else if (index % 5 == 2) {
+		} else if (index % 6 == 3) {
 			offset_x = offset;
 			offset_y = -offset;
 			texture_name = "magic_green.jpg";
-		} else if (index % 5 == 3) {
+		} else if (index % 6 == 4) {
 			offset_x = -offset;
 			offset_y = offset;
 			texture_name = "magic_green.jpg";
-		} else {
+		} else { // index % 6 == 5
 			offset_x = -offset;
 			offset_y = -offset;
 			texture_name = "magic_green.jpg";
@@ -85,7 +86,7 @@ export function create_scene_content() {
 			// texture_name: "moon.jpg",
 			shader_type: "unshaded",
 		};
-		if (index % 10 == 0) {
+		if (push_next_10 && index % 10 == 0 || !push_next_10 && index % 20 == 0) {
 			push_next_10 = !push_next_10;
 		}
 		if (push_next_10) {
