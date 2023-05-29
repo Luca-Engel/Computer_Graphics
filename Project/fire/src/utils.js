@@ -33,12 +33,12 @@ export function calculateBezierPoint(points, t) {
 // TODO fix the angles calculation
 export function convertToTurntableParameters(position) {
     let { x, y, z } = position;
-    // x = -x
+    x = -x
     // Calculate the camera distance factor
     const camera_distance_factor = Math.sqrt(x * x + y * y + z * z);
 
     // Calculate the angle_y
-    let angle_y = - Math.atan2(Math.sqrt(x * x + y * y), z);
+    let angle_y = - Math.atan2(z, Math.sqrt(x * x + y * y));
 
     // Adjust the sign of angle_y when it exceeds 90 degrees or goes below -90 degrees
     // if (angle_y > Math.PI / 2) {
@@ -58,23 +58,23 @@ export function convertToTurntableParameters(position) {
 
 export function cameraPath1(t) {
 
-    const time_to_complete = 30
+    const time_to_complete = 20
 
     // Manually make sure curves are connected (start point is same as end point to avoid jumps)
     const curves = [
         [
-            { x: 0.7, y: 0, z: 0 },
-            { x: 0.7, y: 0.5, z: 0.3 },
-            { x: 0.7, y: 0.5, z: -0.3 },
-            { x: -0.7, y: 0.5, z: 0.3 },
-            { x: 0.7, y: 0, z: 0 },
+            { x: 0.5, y: 0, z: 0.2 },
+            { x: 0.5, y: 0.6, z: 0.2 },
+            { x: 0, y: 0.6, z: -0.3 },
+            { x: -0.5, y: 0.6, z: 0.2 },
+            { x: -0.5, y: 0, z: 0.2 },
         ],
         [
-            { x: 0.7, y: 0, z: 0 },
-            { x: -0.7, y: -0.5, z: 0.3 },
-            { x: 0.7, y: -0.5, z: -0.3 },
-            { x: 0.7, y: -0.5, z: 0.3 },
-            { x: 0.7, y: 0, z: 0 },
+            { x: -0.5, y: 0, z: 0.2 },
+            { x: -0.5, y: -0.3, z: 0.2 },
+            { x: 0, y: -0.3, z: -0 },
+            { x: 0.5, y: -0.3, z: 0.2 },
+            { x: 0.5, y: 0, z: 0.2 },
         ]
     ]
     let t_ = t % time_to_complete;

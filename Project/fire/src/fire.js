@@ -182,10 +182,8 @@ export class ParticlesMovement {
 		mat4_matmul_many(M_translate, initial_position_transform, movement_transform)
 
 		// Reduce size as particles spend their life
-		// let scale = (particle.lifetime - particle_time) * particle.size
 		// Calculate particle scale based on bezier curve
 		var bezier = calculateBezierPoint(this.size_control_points, particle_time / particle.lifetime)
-		// console.log(bezier)
 
 		let scale = bezier.y * particle.size
 		let M_scale = mat4.fromScaling(mat4.create, [scale, scale, scale])
