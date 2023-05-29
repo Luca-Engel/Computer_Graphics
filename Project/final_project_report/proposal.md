@@ -207,6 +207,10 @@ Our third problem wa for the blending. We were not sure what parameters we shoul
 Our fourth problem was with the perlin noise function for the cloud texture. The texture was only on the top right corner of the image, so the smoke particles weren't looking good since there was a lot of black parts. To solve this problem, we just discarded the region of the image texture where the color was black.
 
 
+# Result
+
+TODO : Add the final images of the result of the project here
+
 # Contribution from each team member
 
 - Luca Engel :
