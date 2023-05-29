@@ -3,13 +3,16 @@ import { createREGL } from "../lib/regljs_2.1.0/regl.module.js"
 import { vec2, vec3, vec4, mat3, mat4 } from "../lib/gl-matrix_3.3.0/esm/index.js"
 
 import { DOM_loaded_promise, load_text, load_texture, register_keyboard_action } from "./icg_web.js"
-import {icg_mesh_load_obj} from "./icg_mesh.js"
+import { icg_mesh_load_obj } from "./icg_mesh.js"
 import { deg_to_rad, mat4_to_string, vec_to_string, mat4_matmul_many } from "./icg_math.js"
 import { icg_mesh_make_uv_sphere } from "./icg_mesh.js"
 import { SystemRenderGrid } from "./icg_grid.js"
 
-import { create_scene_content, FirePlacesRendererUnshaded, ParticlesMovement, ParticlesRenderer, SysRenderRocksUnshaded,} from "./fire.js"
+import { create_scene_content, FirePlacesRendererUnshaded, ParticlesMovement, ParticlesRenderer, SysRenderRocksUnshaded, } from "./fire.js"
 import { mesh_preprocess } from "./normal_computation.js"
+
+import { PathRenderer } from "./path.js"
+import { calculateBezierPoint, cameraPath1, convertToTurntableParameters } from "./utils.js"
 
 async function load_resources(regl) {
 	/*
@@ -41,11 +44,11 @@ async function load_resources(regl) {
 
 
 	const shaders_to_load = [
-		'unshaded.vert.glsl', 'unshaded.frag.glsl',
+		'fire_particle.vert.glsl', 'fire_particle.frag.glsl',
 		'stones_unshaded.frag.glsl', 'stones_unshaded.vert.glsl',
 		'noise.frag.glsl', 'noise.vert.glsl',
 		'buffer_to_screen.frag.glsl', 'buffer_to_screen.vert.glsl',
-		'display.vert.glsl', 
+		'display.vert.glsl',
 		'phong.vert.glsl', 'phong.frag.glsl',
 		'earth.frag.glsl', 'sun.vert.glsl',
 		'billboard.vert.glsl', 'billboard_sunglow.frag.glsl',
@@ -58,7 +61,7 @@ async function load_resources(regl) {
 	const meshes_to_load = [
 		"rocks1.obj", "rocks2.obj", "rocks3.obj", "rocks4.obj", "rocks5.obj",
 	]
-	for(const mesh_name of meshes_to_load) {
+	for (const mesh_name of meshes_to_load) {
 		resource_promises[mesh_name] = icg_mesh_load_obj(`./meshes/${mesh_name}`)
 	}
 
@@ -74,7 +77,7 @@ async function load_resources(regl) {
 		resources[key] = await promise
 	}
 
-	for(const mesh_name of meshes_to_load) {
+	for (const mesh_name of meshes_to_load) {
 		resources[mesh_name] = mesh_preprocess(regl, resources[mesh_name])
 	}
 
@@ -108,11 +111,13 @@ async function main() {
 
 	const particles_renderer = new ParticlesRenderer(regl, resources)
 
+	const path_renderer = new PathRenderer(regl, resources)
+
 	const sys_render_grid = new SystemRenderGrid(regl, resources)
 
 	// mesh rendering:
 	const sys_render_rocks_unshaded = new FirePlacesRendererUnshaded(regl, resources); //new SysRenderRocksUnshaded(regl, resources)
-	
+
 
 
 
@@ -139,9 +144,31 @@ async function main() {
 	}
 
 	/*---------------------------------------------------------------
+		UI
+	---------------------------------------------------------------*/
+
+	// Debug overlay
+	const debug_overlay = document.getElementById('debug-overlay')
+	const debug_text = document.getElementById('debug-text')
+	register_keyboard_action('h', () => debug_overlay.classList.toggle('hidden'))
+
+	// Pause
+	let is_paused = false;
+	register_keyboard_action('p', () => is_paused = !is_paused);
+
+	// Grid, to demonstrate keyboard shortcuts
+	let grid_on = true;
+	register_keyboard_action('g', () => grid_on = !grid_on);
+
+	let manual_on = true;
+	register_keyboard_action('m', () => manual_on = !manual_on);
+	// Focusing on selected planet
+	const elem_view_select = document.getElementById('view-select')
+
+	/*---------------------------------------------------------------
 		Camera
 	---------------------------------------------------------------*/
-	const cam_distance_base = 5.
+	const cam_distance_base = 1.
 
 	function update_cam_transform(frame_info) {
 		const { cam_angle_z, cam_angle_y, cam_distance_factor } = frame_info
@@ -166,105 +193,83 @@ async function main() {
 
 	// Rotate camera position by dragging with the mouse
 	canvas_elem.addEventListener('mousemove', (event) => {
-		// if left or middle button is pressed
-		if (event.buttons & 1 || event.buttons & 4) {
-			frame_info.cam_angle_z += event.movementX * 0.005
-			frame_info.cam_angle_y += -event.movementY * 0.005
+		if (manual_on) {
+			// if left or middle button is pressed
+			if (event.buttons & 1 || event.buttons & 4) {
+				frame_info.cam_angle_z += event.movementX * 0.005
+				frame_info.cam_angle_y += -event.movementY * 0.005
 
-			update_cam_transform(frame_info)
+				update_cam_transform(frame_info)
+			}
 		}
+
 	})
 
 	canvas_elem.addEventListener('wheel', (event) => {
-		// scroll wheel to zoom in or out
-		const factor_mul_base = 1.08
-		const factor_mul = (event.deltaY > 0) ? factor_mul_base : 1. / factor_mul_base
-		frame_info.cam_distance_factor *= factor_mul
-		frame_info.cam_distance_factor = Math.max(0.02, Math.min(frame_info.cam_distance_factor, 4))
-		// console.log('wheel', event.deltaY, event.deltaMode);
-		update_cam_transform(frame_info)
+		if (manual_on) {
+			// scroll wheel to zoom in or out
+			const factor_mul_base = 1.08
+			const factor_mul = (event.deltaY > 0) ? factor_mul_base : 1. / factor_mul_base
+			frame_info.cam_distance_factor *= factor_mul
+			frame_info.cam_distance_factor = Math.max(0.02, Math.min(frame_info.cam_distance_factor, 4))
+			update_cam_transform(frame_info)
+		}
+
+
 	})
-
-	/*---------------------------------------------------------------
-		UI
-	---------------------------------------------------------------*/
-
-	// Debug overlay
-	const debug_overlay = document.getElementById('debug-overlay')
-	const debug_text = document.getElementById('debug-text')
-	register_keyboard_action('h', () => debug_overlay.classList.toggle('hidden'))
-
-	// Pause
-	let is_paused = false;
-	register_keyboard_action('p', () => is_paused = !is_paused);
-
-	// Grid, to demonstrate keyboard shortcuts
-	let grid_on = true;
-	register_keyboard_action('g', () => grid_on = !grid_on);
-
-	// Focusing on selected planet
-	const elem_view_select = document.getElementById('view-select')
-
-	// function set_selected_planet(name) {
-	// 	console.log('Selecting', name);
-	// 	selected_planet_name = name;
-	// 	frame_info.cam_distance_factor = 3 * scene_info.actors_by_name[name].size / cam_distance_base;
-	// 	update_cam_transform(frame_info)
-	// }
-
-	// set_selected_planet('earth');
-
-	// for (const name in scene_info.actors_by_name) {
-	// 	if (scene_info.actors_by_name.hasOwnProperty(name)) {
-	// 		const entry = document.createElement('li');
-	// 		entry.textContent = name;
-	// 		entry.addEventListener('click', (event) => set_selected_planet(name));
-	// 		elem_view_select.appendChild(entry);
-	// 	}
-	// }
-
-
-	// Predefined views
-	// register_keyboard_action('1', () => {
-	// 	is_paused = true
-	// 	grid_on = true
-
-	// 	set_selected_planet('earth')
-
-	// 	scene_info.sim_time = 32.0
-	// 	frame_info.cam_angle_z = 169.3 * deg_to_rad
-	// 	frame_info.cam_angle_y = -201.7 * deg_to_rad
-	// 	frame_info.cam_distance_factor = 8.2 / cam_distance_base
-
-	// 	update_cam_transform(frame_info)
-	// })
-	// register_keyboard_action('2', () => {
-	// 	is_paused = true
-	// 	grid_on = true
-
-
 
 	/*---------------------------------------------------------------
 		Render loop
 	---------------------------------------------------------------*/
+	let fixedPoint = { x: 0.5, y: 0, z: -0.5 }
+
 
 	let prev_regl_time = 0
+	let time_elapsed = 0
+	let frames_counted = 0
+	let fps = 0
 
 	regl.frame((frame) => {
 
-		const { mat_view, mat_projection, mat_turntable, light_position_cam, light_position_world, camera_position } = frame_info
+		const dt = frame.time - prev_regl_time
+		time_elapsed += dt
+		frames_counted += 1
+
+		if (time_elapsed > 1.0) {
+			fps = frames_counted
+			frames_counted = 0
+			time_elapsed = 0
+		}
 
 		if (!is_paused) {
-			const dt = frame.time - prev_regl_time
 			scene_info.sim_time += dt
 		}
+		// TODO remove return to allow camera movement while paused
+		else { return }
+
+
+
+		if (!manual_on) {
+			let movingPoint = cameraPath1(scene_info.sim_time)
+
+
+			const { mat_view, mat_projection, mat_turntable } = frame_info
+
+			let position = convertToTurntableParameters(movingPoint)
+			frame_info.cam_angle_z = position.angle_z
+			frame_info.cam_angle_y = position.angle_y
+			frame_info.cam_distance_factor = position.camera_distance_factor
+
+			update_cam_transform(frame_info)
+		}
+
+
+		const { mat_view, mat_projection, mat_turntable, light_position_cam, light_position_world, camera_position } = frame_info
+
+
 		frame_info.sim_time = scene_info.sim_time
 		prev_regl_time = frame.time;
 
-
-
-		// Calculate view matrix, view centered on chosen planet
-		// TODO: Change the matrices to point towards origin (Further tasks later) Not sure, can be used to create camera movements
 		{
 			mat4.perspective(mat_projection,
 				deg_to_rad * 60, // fov y
@@ -273,14 +278,11 @@ async function main() {
 				100, // far
 			)
 
-			// const selected_planet_position = mat4.create([0, 0, 0])//mat4.getTranslation([0, 0, 0], selected_planet_model_mat)
-			// vec3.scale(selected_planet_position, selected_planet_position, -1);
 			const camera_focus_translation_mat = mat4.fromTranslation(mat4.create(), [0, 0, 0])
 			mat4_matmul_many(mat_view, mat_turntable, camera_focus_translation_mat)
 		}
 
 		// Calculate light position in camera frame
-		vec4.transformMat4(light_position_cam, light_position_world, mat_view);
 
 		// Calculate camera position and store it in `camera_position`, it will be needed for the billboard
 		{
@@ -310,8 +312,10 @@ async function main() {
 		particles_renderer.render(frame_info, scene_info)
 
 
+
 		if (grid_on) {
 			sys_render_grid.render(frame_info, scene_info)
+			path_renderer.render(frame_info, scene_info)
 		}
 
 
@@ -319,6 +323,7 @@ async function main() {
 Hello! Sim time is ${scene_info.sim_time.toFixed(2)} s
 Camera: angle_z ${(frame_info.cam_angle_z / deg_to_rad).toFixed(1)}, angle_y ${(frame_info.cam_angle_y / deg_to_rad).toFixed(1)}, distance ${(frame_info.cam_distance_factor * cam_distance_base).toFixed(1)}
 cam pos ${vec_to_string(camera_position)}
+FPS ${fps}
 `;
 	})
 }
