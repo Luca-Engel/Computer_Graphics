@@ -98,7 +98,7 @@ export function create_scene_content() {
 				velocity_y: 0.025 * Math.random() - 0.0125,
 				velocity_z: 0.1 * Math.random(),
 				// texture_name: "moon.jpg",
-				shader_type: "unshaded",
+				shader_type: "fire_particle",
 			};
 
 			smoke_particles.push(smoke_particle);
