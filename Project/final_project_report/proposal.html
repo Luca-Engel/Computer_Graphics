@@ -235,6 +235,123 @@ will also add the animation of smoke and its dissipation in our
 simulation. Lastly, we will need to enable the fire particles to look
 like particles instead of squares which we are planning to do with
 images containing black parts which should end up being see-through</p>
+<h1 id="final-deliverables">Final Deliverables</h1>
+<h2 id="abstract">Abstract</h2>
+<p>The goal of our project was to make a fire simulation using particles
+that move and disappear after some time combined with other effects such
+as smokes particles going away from the fire, blending, billboarding,
+mesh, moving the camera, implement Bézier curves and make other sources
+of magic fire simulation !</p>
+<h2 id="technical-approach">Technical Approach</h2>
+<h4 id="summary-of-our-technical-approach">Summary of our technical
+approach</h4>
+<p>As a starting point, we started with the GL1 and PG1 homeworks that
+we did this year due to the fact that there was already a template for
+the camera, actors and a scene we found would be good that were defined
+in GL1 and there was already nice code on noise functions in the PG1
+homework, so we thought it would make a good start for our project.</p>
+<p>First, we started with the GL1 template and modified the actors such
+that we would have a fire actor with at start the sun texture and make
+our fire simulation there at the origin of the scene.</p>
+<p>At first, it was just simple fire sphere particles using random
+gaussian noise that were already moving and disappearing over time. This
+was done using an array containing all the particles in a for loop. In
+each particle, we allocated its transformation matrix and we made a
+particle as an actor of our scene. To do so, we created an export class
+FireParticlesMovement that would compute the model_matrix and simulate
+the fire particles in the scene. We then needed to make another class
+SysRenderFireParticlesUnshaded in order to draw the actors with
+‘unshaded’ shader_type.</p>
+<p>Secondly, we tried to do some 2 triangles meshing because our partial
+fire simulation right now is making spheres which takes a lot of
+workload for the GPU, so we tried to change that in order to reduce
+significantly the workload of the GPU. To do so, we took inspiration
+from previous homeworks and created a constant rectangle which has as
+elements the vertex_positions of the triangles, the faces and the
+vertex_tex_coordinates. So we replaced those elements instead of the
+ones creating the spheres.</p>
+<p>Then, we tried to implement billbording for our particles so that
+they are always oriented towards the camera regardless of where the
+camera is. This way, our fire simulation will look good even if we look
+at it from the above or from the sides of the fire. To do so, in the
+class FireParticlesMovement we implement a new matrix called
+mat_model_to_world where we apply to it rot_axis and angle_to_camera
+matrices that we computed. So we add the camera position to the scene
+and we now calculate the model_matrix with the camera position as
+well.</p>
+<p>Also, we then implemented the blending for the fire particles to give
+them some aspect of transparency to make the fire way more realistic. To
+do so, we added a blend element in the ParticlesRenderer class so it
+produces new images. The blending is composed of an attribute alpha
+which determines the degree of transparency that we want to apply to the
+pixels. We took inspiration from this <a
+href="https://github.com/regl-project/regl/blob/master/API.md#blending">Blending
+Example</a> and we also then added an if condition in the fragment
+shader if the sum of the rgb colors is less than 1. If that is the case,
+we put alpha to 0 otherwise it equals to 1 and we use this alpha
+variable for the gl_fragColor. We then added a Gaussian filter to create
+a mask and apply it to the texture color.</p>
+<p>We then, started to add some smokes particles in the same way that we
+added fire particles previously. But the difference here is that we
+tried to do it with perlin noise functions. So we took some code and
+files from our PG1 homework and added it to our project. Then, in
+noise.frag.glsl we added a function that computes a cloud texture that
+we will use to create an image we will use to make the smoke particles.
+We also created them with triangle meshing, blending and billboarding
+and we added the smoke particles in the renderer so it is simulated in
+the scene. We also created new vertex and fragment shaders for the smoke
+to make the code cleaner and more readable that follow the same logic
+than the fire shaders. The smoke particles are using the same cloud
+texture that we saved in a smoke_buffer.</p>
+<p>We also tried to then produce more particles for one fire spot and we
+made them spread over a greater surface, same for the smoke particles.
+Moreover, we did some refactoring to make the code cleaner and more
+readable.</p>
+<p>We then added another actor for the rocks that we could place around
+the fire spot. To do so, we added a new class SysRenderRockUnshaded
+where we will collect all the objects in an array and draw them by
+running the pipeline on all the objects. We also added a mesh function
+for the rocks adn we then load the meshes in our main class and added
+the vertex and fragment shader for the rocks. At first, we used the moon
+as the texture for our rocks but we then used a darker texture which
+seems more realistic.</p>
+<p>Then, we made 4 new fire magic spots around our main realistic fire
+spot in the same logic as we did for the previous fire spot but we used
+a different magic green texture for the fire particles. We put them
+close to our main fire spot.</p>
+<h4 id="description-of-problems">Description of problems</h4>
+<p>Our first problem was that our camera eye wasn’t pointing towards the
+origin of the scene where the fire simulation was displayed. To do so,
+we just created a camera_focus_translation_mat and multiplied it with
+mat_view and mat_turnable.</p>
+<p>Our second problem was with the billboarding, the particles were
+successfully always looking at the camera but they sometimes are
+rotating around themselves. We didn’t find a way to solve this problem
+but we can’t really see the problem with all the other particles and
+effects that we added later.</p>
+<p>Our third problem wa for the blending. We were not sure what
+parameters we should put for the dstAlpha attribute in the render as
+there was multiple possibilities. So we tried them all and decided that
+the choice ‘one minus src alpha’ was the one giving us the most decent
+result in our project.</p>
+<p>Our fourth problem was with the perlin noise function for the cloud
+texture. The texture was only on the top right corner of the image, so
+the smoke particles weren’t looking good since there was a lot of black
+parts. To solve this problem, we just discarded the region of the image
+texture where the color was black.</p>
+<h1 id="contribution-from-each-team-member">Contribution from each team
+member</h1>
+<ul>
+<li><p>Luca Engel :</p></li>
+<li><p>Ahmad Jarrar :</p></li>
+<li><p>Antoine Garin : 0.25 for the contribution</p>
+<ul>
+<li>Helped with the start and creation of the project, bringing starting
+ideas for the concept of the project, made the reports, created the
+videos, started the perlin noise part and helped overall during the
+exercise sessions.</li>
+</ul></li>
+</ul>
 <h1 id="resources">Resources</h1>
 <p>Here are some links that we found could be useful for our project
 :</p>
@@ -243,6 +360,9 @@ images containing black parts which should end up being see-through</p>
 href="http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/">OpenGL
 tutorial for the particles</a></li>
 <li><a
+href="https://www.chinedufn.com/webgl-particle-effect-billboard-tutorial/">Particle
+effects via Billboards</a></li>
+<li><a
 href="https://webglfundamentals.org/webgl/lessons/webgl-qna-efficient-particle-system-in-javascript---webgl-.html">WebGL
 fundamentals for writing particles in javascript</a></li>
 <li><a
@@ -250,6 +370,20 @@ href="https://groups.csail.mit.edu/graphics/classes/6.837/F99/projects/reports/t
 project report from MIT students</a></li>
 <li><a href="https://www.shadertoy.com/view/lsdBD2">A fire effet
 simulation using GLSL</a></li>
+<li><a href="https://learnopengl.com/Advanced-OpenGL/Blending">Blending
+Tutorial</a></li>
+<li><a
+href="https://github.com/regl-project/regl/blob/master/API.md#blending">Blending
+Example</a></li>
+<li><a
+href="https://www.turbosquid.com/3d-models/3d-short-flat-rocks-1909649">Mesh
+used and adapted for rocks</a></li>
+<li><a
+href="https://www.shutterstock.com/image-photo/black-stone-concrete-texture-background-anthracite-1617633904">Texture
+used and adapted for the rocks</a></li>
+<li><a
+href="https://www.shutterstock.com/image-vector/abstract-green-blue-blurred-gradient-background-561604051">Texture
+used for the green_magic</a></li>
 </ul>
 </body>
 </html>
