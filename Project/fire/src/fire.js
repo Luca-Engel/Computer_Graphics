@@ -1,8 +1,8 @@
 import { vec2, vec3, vec4, mat3, mat4 } from "../lib/gl-matrix_3.3.0/esm/index.js"
 import { mat4_matmul_many } from "./icg_math.js"
-import {init_noise} from "./noise.js"
-import {framebuffer_to_image_download} from "./icg_screenshot.js"
-
+import { init_noise } from "./noise.js"
+import { framebuffer_to_image_download } from "./icg_screenshot.js"
+import { calculateBezierPoint } from "./utils.js"
 
 /*
 	Construct the scene!
@@ -54,7 +54,7 @@ export function create_scene_content() {
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
 		const fire_particle = {
 			lifetime: 2 * Math.random(),
-			size: 0.003 * Math.random() + 0.01,
+			size: 0.03 * Math.random() + 0.01,
 
 			// TODO: Tune particle starting position using perline noise etc
 			start_position: vec3.fromValues(
@@ -74,7 +74,7 @@ export function create_scene_content() {
 
 			// TODO: Change Texture here, change to flame texture, can also give an array of textures
 			texture_name: texture_name,
-			shader_type: "unshaded",
+			shader_type: "fire_particle",
 		}
 		fire_particles.push(fire_particle);
 
@@ -105,9 +105,6 @@ export function create_scene_content() {
 		}
 	}
 
-
-
-
 	const actors = [
 		{
 			name: 'firepit_rocks',
@@ -132,11 +129,6 @@ export function create_scene_content() {
 		actors_by_name[actor.name] = actor
 	}
 
-
-
-
-
-
 	// In each particle, allocate its transformation matrix
 	for (const particle of fire_particles) {
 		particle.mat_model_to_world = mat4.create()
@@ -158,6 +150,12 @@ export function create_scene_content() {
 export class ParticlesMovement {
 
 	constructor() {
+		this.size_control_points = [
+			{ x: 0, y: 0, z: 0 },
+			{ x: 0, y: 2.2, z: 0 },
+			{ x: 0.2, y: 0, z: 0 },
+			{ x: 1, y: 0, z: 0 },
+		]
 
 	}
 
@@ -184,8 +182,13 @@ export class ParticlesMovement {
 		mat4_matmul_many(M_translate, initial_position_transform, movement_transform)
 
 		// Reduce size as particles spend their life
-		let remaining_life_scale = (particle.lifetime - particle_time) * particle.size
-		let M_scale = mat4.fromScaling(mat4.create, [remaining_life_scale, remaining_life_scale, remaining_life_scale])
+		// let scale = (particle.lifetime - particle_time) * particle.size
+		// Calculate particle scale based on bezier curve
+		var bezier = calculateBezierPoint(this.size_control_points, particle_time / particle.lifetime)
+		// console.log(bezier)
+
+		let scale = bezier.y * particle.size
+		let M_scale = mat4.fromScaling(mat4.create, [scale, scale, scale])
 
 		// Store the combined transform in particle.mat_model_to_world
 		mat4_matmul_many(particle.mat_model_to_world, M_translate, M_scale, M_rotate)
@@ -216,26 +219,18 @@ export class ParticlesMovement {
 export class ParticlesRenderer {
 
 	constructor(regl, resources) {
-		//TODO: Change from sphere to billboard (will speed up rendering I hope), Hint: can see the 2D traiangle gneration in GL1 Exercise
-		const mesh_uvsphere = resources.mesh_uvsphere
 
 		const rectangle = {
 			vertex_positions: [
 				[-0.5, 0, -0.5],
 				[0.5, 0, - 0.5],
 				[-0.5, 0, 0.5],
-				// [0.5, -0.5, 0],
-				// [-0.5, 0.5, 0],
 				[0.5, 0, 0.5],
 			],
 			vertex_tex_coordinates: [
-				// Triangle 1
 				[0, 0],
 				[1, 0],
 				[0, 1],
-				// Triangle 2
-				// [1, 0],
-				// [0, 1],
 				[1, 1],
 			],
 			faces: [
@@ -243,9 +238,7 @@ export class ParticlesRenderer {
 				[0, 1, 2],
 				// Triangle 2
 				[1, 2, 3],
-
 			]
-
 		}
 
 		// Create a list of noise textures for the smoke:
@@ -255,7 +248,7 @@ export class ParticlesRenderer {
 		const smoke_texture = noise_textures[0];
 
 		// The following code is used to save the texture to an image file
-		this.smoke_tex_buffer = smoke_texture.draw_texture_to_buffer([0,0], 5);
+		this.smoke_tex_buffer = smoke_texture.draw_texture_to_buffer([0, 0], 5);
 
 
 		this.pipeline = regl({
@@ -293,8 +286,8 @@ export class ParticlesRenderer {
 				color: [0, 0, 0, 0],
 			},
 
-			vert: resources['unshaded.vert.glsl'],
-			frag: resources['unshaded.frag.glsl'],
+			vert: resources['fire_particle.vert.glsl'],
+			frag: resources['fire_particle.frag.glsl'],
 		})
 
 		// Keep a reference to textures
@@ -312,20 +305,20 @@ export class ParticlesRenderer {
 		// Read frame info
 		const { mat_projection, mat_view } = frame_info
 
-		
+
 
 		const particles = scene_info.fire_particles.concat(scene_info.smoke_particles);
-		particles.sort(function(a, b) {
+		particles.sort(function (a, b) {
 			const distance_a = vec3.distance(a.start_position, frame_info.camera_position);
 			const distance_b = vec3.distance(b.start_position, frame_info.camera_position);
 			return distance_b - distance_a;
-		  });
+		});
 
 		// For each particle, construct information needed to draw it using the pipeline
 		for (const particle of particles) { //scene_info.fire_particles) {
 
 			// Choose only planet using this shader
-			if (particle.shader_type === 'unshaded') {
+			if (particle.shader_type === 'fire_particle') {
 
 				const mat_mvp = mat4.create()
 
@@ -333,7 +326,7 @@ export class ParticlesRenderer {
 				let is_smoke_particle = false;
 
 				// If the particle is a smoke particle, then we need to use the smoke texture
-				if(particle.texture_name === undefined) {
+				if (particle.texture_name === undefined) {
 					// the texture name just needs to be something so that it is not undefined
 					// but is not used by the fragment shader if the particle is a smoke particle
 					texture_name = this.resources["moon.jpg"];
@@ -351,12 +344,6 @@ export class ParticlesRenderer {
 		this.pipeline(entries_to_draw)
 	}
 }
-
-
-
-
-
-
 
 
 // mesh renderer:
@@ -379,7 +366,7 @@ export class FirePlacesRendererUnshaded {
 		for (const rock_renderer of this.rock_renderers) {
 			rock_renderer.render(frame_info, scene_info);
 		}
-		
+
 	}
 }
 /*
