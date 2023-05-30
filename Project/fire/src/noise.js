@@ -1,4 +1,4 @@
-import {vec2} from "../lib/gl-matrix_3.3.0/esm/index.js"
+import { vec2 } from "../lib/gl-matrix_3.3.0/esm/index.js"
 
 const mesh_quad_2d = {
 	position: [
@@ -21,7 +21,7 @@ export function init_noise(regl, resources) {
 
 	// Safari (at least older versions of it) does not support reading float buffers...
 	var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-	
+
 	// shared buffer to which the texture are rendered
 	const noise_buffer = regl.framebuffer({
 		width: 768,
@@ -31,18 +31,18 @@ export function init_noise(regl, resources) {
 		stencil: false,
 		depth: false,
 		mag: 'linear',
-		min: 'linear', 
+		min: 'linear',
 	})
 
 	const pipeline_generate_texture = regl({
-		attributes: {position: mesh_quad_2d.position},
+		attributes: { position: mesh_quad_2d.position },
 		elements: mesh_quad_2d.faces,
-		
+
 		uniforms: {
 			viewer_position: regl.prop('viewer_position'),
-			viewer_scale:    regl.prop('viewer_scale'),
+			viewer_scale: regl.prop('viewer_scale'),
 		},
-				
+
 		vert: resources['display.vert.glsl'],
 		frag: regl.prop('shader_frag'),
 
@@ -50,7 +50,7 @@ export function init_noise(regl, resources) {
 	})
 
 	const pipeline_draw_buffer_to_screen = regl({
-		attributes: {position: mesh_quad_2d.position},
+		attributes: { position: mesh_quad_2d.position },
 		elements: mesh_quad_2d.faces,
 		uniforms: {
 			buffer_to_draw: noise_buffer,
@@ -75,17 +75,17 @@ export function init_noise(regl, resources) {
 varying vec2 v2f_tex_coords;
 
 void main() {
-	vec3 color = ${this.shader_func_name}(v2f_tex_coords);
-	gl_FragColor = vec4(color, 1.0);
+	vec4 color = ${this.shader_func_name}(v2f_tex_coords);
+	gl_FragColor = color;
 } 
-`;		
+`;
 		}
 
 		get_buffer() {
 			return noise_buffer
 		}
 
-		draw_texture_to_buffer({mouse_offset = [0, 0], zoom_factor = 1.0, width = 768, height = 768}) {
+		draw_texture_to_buffer({ mouse_offset = [0, 0], zoom_factor = 1.0, width = 768, height = 768 }) {
 			// adjust the buffer size to the desired value
 			if (noise_buffer.width != width || noise_buffer.height != height) {
 				noise_buffer.resize(width, height)
@@ -93,7 +93,7 @@ void main() {
 
 			regl.clear({
 				framebuffer: noise_buffer,
-				color: [0, 0, 0, 1], 
+				color: [0, 0, 0, 1],
 			})
 
 			pipeline_generate_texture({
@@ -101,7 +101,7 @@ void main() {
 				viewer_position: vec2.negate([0, 0], mouse_offset),
 				viewer_scale: zoom_factor,
 			})
-			
+
 			return noise_buffer
 		}
 
@@ -113,6 +113,7 @@ void main() {
 	const noise_textures = [
 		// new NoiseTexture('1D plot', 'plots'),
 		new NoiseTexture('Cloud', 'tex_cloud'),
+		new NoiseTexture('ColorCloud', 'tex_cloud_color'),
 		new NoiseTexture('Turbulence', 'tex_turbulence'),
 		new NoiseTexture('Perlin', 'tex_perlin'),
 		new NoiseTexture('FBM', 'tex_fbm'),
@@ -129,7 +130,7 @@ void main() {
 
 
 
-	
+
 
 /* GLES2
 

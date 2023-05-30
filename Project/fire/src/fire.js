@@ -14,47 +14,47 @@ export function create_scene_content() {
 	var offset_x = 0;
 	var offset_y = 0;
 	var push_next_10 = true;
-	var texture_name = "sun.jpg";
+	// var texture_name = "sun.jpg";
 
 	const fire_particles = [];
 	const smoke_particles = [];
 
-	for (let index = 0; index < 1500; index++) {
+	for (let index = 0; index < 500; index++) {
 
-		let offset_x, offset_y, texture_name;
+		let offset_x, offset_y, texture_color;
 		switch (index % 6) {
 			case 0: // more particles in the middle for asthetic reasons
 			case 1:
 				offset_x = 0;
 				offset_y = 0;
-				texture_name = "sun.jpg";
+				texture_color = vec4.fromValues(0.80, 0.43, 0., 1.)
 				break;
 			case 2:
 				offset_x = offset;
 				offset_y = offset;
-				texture_name = "magic_green.jpg";
+				texture_color = vec4.fromValues(0.78, 0.28, 0.06, 1.)
 				break;
 			case 3:
 				offset_x = offset;
 				offset_y = -offset;
-				texture_name = "magic_green.jpg";
+				texture_color = vec4.fromValues(0.08, 0.33, 0.74, 1.)
 				break;
 			case 4:
 				offset_x = -offset;
 				offset_y = offset;
-				texture_name = "magic_green.jpg";
+				texture_color = vec4.fromValues(0.67, 0.24, 0.74, 1.)
 				break;
 			case 5:
 				offset_x = -offset;
 				offset_y = -offset;
-				texture_name = "magic_green.jpg";
+				texture_color = vec4.fromValues(0.23, 0.49, 0.36, 1.)
 				break;
 		}
-
+		let size_ = 0.07 * Math.random() + 0.01
 		// Here we can set the randomness based on specific perlin noise instead of random gaussian
 		const fire_particle = {
 			lifetime: 2 * Math.random(),
-			size: 0.03 * Math.random() + 0.01,
+			size: size_,
 
 			// TODO: Tune particle starting position using perline noise etc
 			start_position: vec3.fromValues(
@@ -62,18 +62,14 @@ export function create_scene_content() {
 				offset_y + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 2,
 				(0.1 + diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
 			),
-			// velocity: vec3.fromValues(
-			// 	0.02 * Math.random() - 0.01,
-			// 	0.1 * Math.random(),
-			// 	0.02 * Math.random() - 0.01),
 
 			// TODO: Tune particle movement direction using perline noise etc
-			velocity_x: 0.025 * Math.random() - 0.0125,
-			velocity_y: 0.025 * Math.random() - 0.0125,
-			velocity_z: 0.07 * Math.random(),
+			velocity_x: (0.025 * Math.random() - 0.0125) / (size_ * 50),
+			velocity_y: (0.025 * Math.random() - 0.0125) / (size_ * 50),
+			velocity_z: (0.07 * Math.random()) / (size_ * 50),
 
 			// TODO: Change Texture here, change to flame texture, can also give an array of textures
-			texture_name: texture_name,
+			texture_name: texture_color,
 			shader_type: "fire_particle",
 		}
 		fire_particles.push(fire_particle);
@@ -81,23 +77,23 @@ export function create_scene_content() {
 		// only draw 1/3 times as many smoke particles as fire particles but the 
 		// same amount for each fire place
 		if ((push_next_10 && index % 10 == 0) // always draw 10 smoke particles in a row (2 times per fire place)
-			|| (!push_next_10 && index % 30 == 0)) { // then wait 20 particles
+			|| (!push_next_10 && index % 10 == 0)) { // then wait 20 particles
 			push_next_10 = !push_next_10;
 		}
 
 		if (push_next_10) {
 			const smoke_particle = {
 				lifetime: 2 * Math.random(),
-				size: 0.03 * Math.random() + 0.01,
+				size: size_,
 				start_position: vec3.fromValues(
 					offset_x + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
 					offset_y + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 1.9,
 					(0.1 + diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
 				),
-				velocity_x: 0.025 * Math.random() - 0.0125,
-				velocity_y: 0.025 * Math.random() - 0.0125,
-				velocity_z: 0.1 * Math.random(),
-				// texture_name: "moon.jpg",
+				velocity_x: (0.025 * Math.random() - 0.0125) / (size_ * 30),
+				velocity_y: (0.025 * Math.random() - 0.0125) / (size_ * 30),
+				velocity_z: (0.1 * Math.random()) / (size_ * 30),
+				texture_name: vec4.fromValues(0.5, 0.5, 0.5, 1.),
 				shader_type: "fire_particle",
 			};
 
@@ -244,9 +240,11 @@ export class ParticlesRenderer {
 
 		// TODO: pick the correct texture out of the list of textures...
 		const smoke_texture = noise_textures[0];
+		// const fire_texture = noise_textures[1];
 
 		// The following code is used to save the texture to an image file
 		this.smoke_tex_buffer = smoke_texture.draw_texture_to_buffer([0, 0], 5);
+		// this.fire_tex_buffer = fire_texture.draw_texture_to_buffer([0, 0], 5);
 
 
 		this.pipeline = regl({
@@ -260,7 +258,7 @@ export class ParticlesRenderer {
 			// Uniforms: global data available to the shader
 			uniforms: {
 				mat_mvp: regl.prop('mat_mvp'),
-				texture_base_color: regl.prop('tex_base_color'),
+				texture_color: regl.prop("texture_color"),
 				is_smoke_particle: regl.prop('is_smoke_particle'),
 				smoke_tex_buffer: this.smoke_tex_buffer,
 			},
@@ -320,20 +318,20 @@ export class ParticlesRenderer {
 
 				const mat_mvp = mat4.create()
 
-				let texture_name = this.resources[particle.texture_name];
+				let texture_color = particle.texture_name;
 				let is_smoke_particle = false;
 
 				// If the particle is a smoke particle, then we need to use the smoke texture
 				if (particle.texture_name === undefined) {
 					// the texture name just needs to be something so that it is not undefined
 					// but is not used by the fragment shader if the particle is a smoke particle
-					texture_name = this.resources["moon.jpg"];
+					texture_color = vec4.fromValues(0.5, 0.5, 0.5, 1.)
 					is_smoke_particle = true;
 				}
 
 				entries_to_draw.push({
 					mat_mvp: mat4_matmul_many(mat_mvp, mat_projection, mat_view, particle.mat_model_to_world),
-					tex_base_color: texture_name,
+					texture_color: texture_color,
 					is_smoke_particle: is_smoke_particle,
 				})
 			}

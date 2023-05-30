@@ -306,14 +306,37 @@ vec3 tex_marble(vec2 point) {
 }
 
 // Procedural "cloud" texture
-vec3 tex_cloud(vec2 point) {
+vec4 tex_cloud(vec2 point) {
+	vec2 half_vector = vec2(0., 0.); //vec2(0.5, 0.5);
+	vec2 updated_point = point - half_vector;
+	float d = dot(updated_point, updated_point);
+	float g = 2. * exp(-3. * d) - 1.;
+	float noise = g + 0.5 * perlin_fbm(point * 2.);
+	
+	float alpha = 1.;
+	if (noise < 0.1)
+		alpha = 0.;
+	else if (noise < 0.3) {
+		alpha = noise;
+	}
+
+	return vec4(noise, noise, noise, alpha);
+}
+vec4 tex_cloud_color(vec2 point) {
 	vec2 half_vector = vec2(0., 0.); //vec2(0.5, 0.5);
 	vec2 updated_point = point - half_vector;
 	float d = dot(updated_point, updated_point);
 	float g = 2. * exp(-3. * d) - 1.;
 	float noise = g + 0.5 * perlin_fbm(point * 2.);
 
-	return vec3(noise, noise, noise);
+	float alpha = 1.;
+	if (noise < 0.2)
+		alpha = 0.;
+	else if (noise < 0.3) {
+		alpha = noise;
+	}
+
+	return vec4(noise, noise*0.65, noise*0.2, alpha);
 }
 
 
