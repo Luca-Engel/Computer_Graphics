@@ -245,7 +245,6 @@ async function main() {
 			scene_info.sim_time += dt
 		}
 		// TODO remove return to allow camera movement while paused
-		else { return }
 
 
 

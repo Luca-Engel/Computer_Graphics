@@ -6,14 +6,13 @@ import { calculateBezierPoint, cameraPath1, convertToTurntableParameters, points
 export class PathRenderer {
     constructor(regl, resources) {
         let curvePoints = []
-        for (let i = 0; i < 120; i++) {
+        for (let i = 0.; i < 120; i += 0.1) {
 
             curvePoints.push(cameraPath1(i))
         }
         curvePoints = pointsAsList(curvePoints)
 
         curvePoints.push(curvePoints[0])
-        console.log(curvePoints)
 
         this.pipeline = regl({
             frag: `
