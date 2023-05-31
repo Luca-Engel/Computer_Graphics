@@ -193,7 +193,9 @@ Moreover, we did some refactoring to make the code cleaner and more readable.
 
 We then added another actor for the rocks that we could place around the fire spot. To do so, we added a new class SysRenderRockUnshaded where we will collect all the objects in an array and draw them by running the pipeline on all the objects. We also added a mesh function for the rocks adn we then load the meshes in our main class and added the vertex and fragment shader for the rocks. At first, we used the moon as the texture for our rocks but we then used a darker texture which seems more realistic.
 
-Then, we made 4 new fire magic spots around our main realistic fire spot in the same logic as we did for the previous fire spot but we used a different magic green texture for the fire particles. We put them close to our main fire spot.
+Then, we made 4 new fire magic spots around our main realistic fire spot in the same logic as we did for the previous fire spot but we used different magic textures for the fire particles. We put them close to our main fire spot.
+
+Finally, we added the Bézier curve effect. The Bézier curve was implemented by computing the interpolating points using the deCasteljau's algorithm in order to create a camera path following the curve automatically. The curve was also created by computing new camera angles and by giving a time of execution for the simulation of a curve and we store the computed points in a list.
 
 
 
@@ -209,7 +211,10 @@ Our fourth problem was with the perlin noise function for the cloud texture. The
 
 # Result
 
-TODO : Add the final images of the result of the project here
+![Our final result](images/final_result.png){width="700px"}
+
+# Zip of the project
+The zip archive of the sources files for the project is in the folder, feel free to check it out !
 
 # Contribution from each team member
 
@@ -236,3 +241,6 @@ Here are some links that we found could be useful for our project :
 - [Mesh used and adapted for rocks](https://www.turbosquid.com/3d-models/3d-short-flat-rocks-1909649)
 - [Texture used and adapted for the rocks](https://www.shutterstock.com/image-photo/black-stone-concrete-texture-background-anthracite-1617633904)
 - [Texture used for the green_magic](https://www.shutterstock.com/image-vector/abstract-green-blue-blurred-gradient-background-561604051)
+
+
+# File containing all our original code

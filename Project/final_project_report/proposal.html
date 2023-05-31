@@ -317,8 +317,14 @@ as the texture for our rocks but we then used a darker texture which
 seems more realistic.</p>
 <p>Then, we made 4 new fire magic spots around our main realistic fire
 spot in the same logic as we did for the previous fire spot but we used
-a different magic green texture for the fire particles. We put them
-close to our main fire spot.</p>
+different magic textures for the fire particles. We put them close to
+our main fire spot.</p>
+<p>Finally, we added the Bézier curve effect. The Bézier curve was
+implemented by computing the interpolating points using the
+deCasteljau’s algorithm in order to create a camera path following the
+curve automatically. The curve was also created by computing new camera
+angles and by giving a time of execution for the simulation of a curve
+and we store the computed points in a list.</p>
 <h4 id="description-of-problems">Description of problems</h4>
 <p>Our first problem was that our camera eye wasn’t pointing towards the
 origin of the scene where the fire simulation was displayed. To do so,
@@ -340,7 +346,13 @@ the smoke particles weren’t looking good since there was a lot of black
 parts. To solve this problem, we just discarded the region of the image
 texture where the color was black.</p>
 <h1 id="result">Result</h1>
-<p>TODO : Add the final images of the result of the project here</p>
+<figure>
+<img src="images/final_result.png" width="700" alt="Our final result" />
+<figcaption aria-hidden="true">Our final result</figcaption>
+</figure>
+<h1 id="zip-of-the-project">Zip of the project</h1>
+<p>The zip archive of the sources files for the project is in the
+folder, feel free to check it out !</p>
 <h1 id="contribution-from-each-team-member">Contribution from each team
 member</h1>
 <ul>
@@ -387,5 +399,7 @@ used and adapted for the rocks</a></li>
 href="https://www.shutterstock.com/image-vector/abstract-green-blue-blurred-gradient-background-561604051">Texture
 used for the green_magic</a></li>
 </ul>
+<h1 id="file-containing-all-our-original-code">File containing all our
+original code</h1>
 </body>
 </html>
