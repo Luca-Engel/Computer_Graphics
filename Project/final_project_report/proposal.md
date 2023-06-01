@@ -169,67 +169,63 @@ Lastly, we will need to enable the fire particles to look like particles instead
 # Final Deliverables
 
 ## Abstract
-The goal of our project was to make a fire simulation using particles that move and disappear after some time combined with other effects such as smokes particles going away from the fire, blending, billboarding, mesh, moving the camera, implement Bézier curves and make other sources of magic fire simulation !
+This project creates a fire simulation. For this simulation, particles spawn according to a gaussian function, adjust their size according to Bézier Curves, and dissipate after a while. Billboards are used for the particles to increase computational efficiency and noise functions combined with pictures create the texture of the particles. Using vectors representing the color, different types of firepits are rendered, such as blue or green fires. Additionally, the camera can follow predefined paths using Bézier Curves.
 
 ## Technical Approach
 
-#### Summary of our technical approach
-As a starting point, we started with the GL1 and PG1 homeworks that we did this year due to the fact that there was already a template for the camera, actors and a scene we found would be good that were defined in GL1 and there was already nice code on noise functions in the PG1 homework, so we thought it would make a good start for our project.
+#### Summary
+As a starting point, we started with the GL1 and PG1 homeworks that we did this year due to the fact that there was already a template for the camera, actors and a scene we found would be good that were defined in GL1 and there was already nice code on noise functions in the PG1 homework, so we thought it would be a good starting point for our project.
 
-First, we started with the GL1 template and modified the actors such that we would have a fire actor with at start the sun texture and make our fire simulation there at the origin of the scene.
+First, we started with the GL1 template and modified the actors such that we would have fire actors with the sun texture overlayed and position the particle spawning center at the origin of the scene.
 
-At first, it was just simple fire sphere particles using random gaussian noise that were already moving and disappearing over time. This was done using an array containing all the particles in a for loop. In each particle, we allocated its transformation matrix and we made a particle as an actor of our scene. To do so, we created an export class FireParticlesMovement that would compute the model_matrix and simulate the fire particles in the scene. We then needed to make another class SysRenderFireParticlesUnshaded in order to draw the actors with 'unshaded' shader_type.
+To start simple, the fire particles were rendered using spheres and the start position was calculated using a random gaussian noise function. The particles decreased in size over time and moved away from the center. This was done using an array containing all the particles which were instanciated in a for loop. For each particle, a transformation matrix was allocated and the particle was added to the scene as an actor. The class FireParticlesMovement was created to compute the model_matrix and simulate the fire particles in the scene. The class SysRenderFireParticlesUnshaded is responsible for drawing the actors with 'unshaded' shader_type.
 
-Secondly, we tried to do some 2 triangles meshing because our partial fire simulation right now is making spheres which takes a lot of workload for the GPU, so we tried to change that in order to reduce significantly the workload of the GPU. To do so, we took inspiration from previous homeworks and created a constant rectangle which has as elements the vertex_positions of the triangles, the faces and the vertex_tex_coordinates. So we replaced those elements instead of the ones creating the spheres.
+To increase the computation efficience, billboards were used. These were constructed out of 2 triangle meshes. Then, the fire particles were projected on them. This change was based on a billboarding homework from a previous year. To make sure the billboards are always oriented towards the camera, a matrix computation was added in FireParticlesMovement to correct the orientation of the billboards. To enable this computation, the camera position had to be added to the scene to have access to it in this class.
 
-Then, we tried to implement billbording for our particles so that they are always oriented towards the camera regardless of where the camera is. This way, our fire simulation will look good even if we look at it from the above or from the sides of the fire. To do so, in the class FireParticlesMovement we implement a new matrix called mat_model_to_world where we apply to it rot_axis and angle_to_camera matrices that we computed. So we add the camera position to the scene and we now calculate the model_matrix with the camera position as well.
+Additionally, make the fire simulation more realistic, blending of the particles was implemented. This results in particles becoming brighter if there are multiple ones behind each other. To do so, blending has been added in the ParticlesRenderer class to apply this change. The blending is composed of an attribute alpha which determines the degree of transparency that is applied to the pixels. The blending is based on the following resource: [Blending Example](https://github.com/regl-project/regl/blob/master/API.md#blending). 
 
-Also, we then implemented the blending for the fire particles to give them some aspect of transparency to make the fire way more realistic. To do so, we added a blend element in the ParticlesRenderer class so it produces new images. The blending is composed of an attribute alpha which determines the degree of transparency that we want to apply to the pixels. We took inspiration from this [Blending Example](https://github.com/regl-project/regl/blob/master/API.md#blending) and we also then added an if condition in the fragment shader if the sum of the rgb colors is less than 1. If that is the case, we put alpha to 0 otherwise it equals to 1 and we use this alpha variable for the gl_fragColor. We then added a Gaussian filter to create a mask and apply it to the texture color.
+Also, to not ensure that black parts of the particles are not drawn, an if condition has been added in the fragment shader to ensure that pixels would not be drawn if the sum of their rgb colors was less than 0.1. Additionally, to change the bilboards to a round shape, a Gaussian filter has been added to create a mask and apply it to the texture where, again, pixels could then be discarded.
 
-We then, started to add some smokes particles in the same way that we added fire particles previously. But the difference here is that we tried to do it with perlin noise functions. So we took some code and files from our PG1 homework and added it to our project. Then, in noise.frag.glsl we added a function that computes a cloud texture that we will use to create an image we will use to make the smoke particles. We also created them with triangle meshing, blending and billboarding and we added the smoke particles in the renderer so it is simulated in the scene. We also created new vertex and fragment shaders for the smoke to make the code cleaner and more readable that follow the same logic than the fire shaders. The smoke particles are using the same cloud texture that we saved in a smoke_buffer.
+Smoke particles were added in a very similar way to the fire particles. Perlin noise functions were used to create their texture. This was based on the PG1 homework. For that, in noise.frag.glsl a function that computes a cloud texture was added. This texture is stored in a buffer that is used to create the smoke particles' texture. Also for the smoke particles billboarding was used.
 
-We also tried to then produce more particles for one fire spot and we made them spread over a greater surface, same for the smoke particles.
-Moreover, we did some refactoring to make the code cleaner and more readable.
+To make the scene more interesting, rocks were placed around the firepit. These rock meshes were downloaded from the [internet](https://www.turbosquid.com/3d-models/3d-short-flat-rocks-1909649) and adapted and combined in Blender. These rocks are rendered thanks to the class SysRenderRockUnshaded where, the rocks were loaded from the .obj files and rendered in the scene. At first, the color of the rocks was created using the moon as texture but this was changed to a darker texture found [online](https://www.shutterstock.com/image-photo/black-stone-concrete-texture-background-anthracite-1617633904) and then adapted to make the simulation more realistic.
 
-We then added another actor for the rocks that we could place around the fire spot. To do so, we added a new class SysRenderRockUnshaded where we will collect all the objects in an array and draw them by running the pipeline on all the objects. We also added a mesh function for the rocks adn we then load the meshes in our main class and added the vertex and fragment shader for the rocks. At first, we used the moon as the texture for our rocks but we then used a darker texture which seems more realistic.
+Then, 4 new magic colored fire spots were added around the main realistic fire spot following the same procedure as the main fire pit but using different magic textures for the fire particles.
 
-Then, we made 4 new fire magic spots around our main realistic fire spot in the same logic as we did for the previous fire spot but we used different magic textures for the fire particles. We put them close to our main fire spot.
-
-Finally, we added the Bézier curve effect. The Bézier curve was implemented by computing the interpolating points using the deCasteljau's algorithm in order to create a camera path following the curve automatically. The curve was also created by computing new camera angles and by giving a time of execution for the simulation of a curve and we store the computed points in a list.
+Finally, using Bézier curves, the camera's movement could, in addition to the manual movement, be moved automatically. The Bézier curve was implemented by computing the interpolation of points using the deCasteljau's algorithm in order to create a camera path following the curve automatically. The curve was also created by computing new camera angles and by giving a time of execution for the simulation of a curve.
 
 
 
 #### Description of problems
-Our first problem was that our camera eye wasn't pointing towards the origin of the scene where the fire simulation was displayed. To do so, we just created a camera_focus_translation_mat and multiplied it with mat_view and mat_turnable.
+Our first problem was that our camera eye wasn't pointing towards the origin of the scene where the fire simulation was displayed. To fix this, we created a camera_focus_translation_mat and multiplied it with mat_view and mat_turnable.
 
-Our second problem was with the billboarding, the particles were successfully always looking at the camera but they sometimes are rotating around themselves. We didn't find a way to solve this problem but we can't really see the problem with all the other particles and effects that we added later.
+Our second problem was with the billboarding, the particles were successfully always looking at the camera but they would not have the same side looking up at all times but rotating around themselves. As discussed with the assistants, however, we left this problem out. Also, since our textures now are no longer squares, it is almost not noticible.
 
-Our third problem wa for the blending. We were not sure what parameters we should put for the dstAlpha attribute in the render as there was multiple possibilities. So we tried them all and decided that the choice 'one minus src alpha' was the one giving us the most decent result in our project.
+Our third problem was for the blending. We were not sure what parameters we should put for the dstAlpha attribute in the render as there was multiple possibilities. So we tried them all and decided that the choice 'one minus src alpha' was the one giving us the best result in our project.
 
-Our fourth problem was with the perlin noise function for the cloud texture. The texture was only on the top right corner of the image, so the smoke particles weren't looking good since there was a lot of black parts. To solve this problem, we just discarded the region of the image texture where the color was black.
+Our fourth problem was with the perlin noise function for the cloud texture. The texture was only on the top right corner of the image, so the smoke particles weren't looking good since there was a lot of black parts. To solve this problem, we just discarded the region of the image texture where the color was black and adapted the noise function to create the clouds in the middle of the buffer.
 
 
 # Result
 
-![Our final result](images/final_result.png){width="700px"}
+![Final result of the fire simulation](images/final_result.png){width="700px"}
 
 # Zip of the project
 The zip archive of the sources files for the project is in the folder, feel free to check it out !
 
 # Contribution from each team member
 
-- Luca Engel :
+- Luca Engel : 0.35
 
-- Ahmad Jarrar :
+- Ahmad Jarrar : 0.40
 
-- Antoine Garin : 0.25 for the contribution
-    - Helped with the start and creation of the project, bringing starting ideas for the concept of the project, made the reports, created the videos, started the perlin noise part and helped overall during the exercise sessions.
+- Antoine Garin : 0.25
 
 
 
 # Resources
 
-Here are some links that we found could be useful for our project :
+Here are some links that we found to be useful for our project :
 
 - [OpenGL tutorial for the particles](http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/)
 - [Particle effects via Billboards](https://www.chinedufn.com/webgl-particle-effect-billboard-tutorial/)

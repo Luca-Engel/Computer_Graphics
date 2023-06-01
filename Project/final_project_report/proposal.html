@@ -8,15 +8,10 @@
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
-    ul.task-list li input[type="checkbox"] {
-      width: 0.8em;
-      margin: 0 0.8em 0.2em -1.6em;
-      vertical-align: middle;
-    }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" href="icg_report.css" />
@@ -29,40 +24,24 @@
 <h1 class="title">Interactive Fire Simulation</h1>
 </header>
 <figure>
-<img src="images/Fire-simulation.jpg" width="700"
-alt="Example of a fire simulation" />
-<figcaption aria-hidden="true">Example of a fire simulation</figcaption>
+<img src="images/Fire-simulation.jpg" width="700" alt="Example of a fire simulation" /><figcaption aria-hidden="true">Example of a fire simulation</figcaption>
 </figure>
 <h1 id="summary">Summary</h1>
-<p>In this project, our team will create a fire simulation based on
-noise functions combined with particles simulating burning ashes flying
-away from the fire. It will include an interactive part where the user
-can adapt certain parameters.</p>
+<p>In this project, our team will create a fire simulation based on noise functions combined with particles simulating burning ashes flying away from the fire. It will include an interactive part where the user can adapt certain parameters.</p>
 <h1 id="goals-and-deliverables">Goals and Deliverables</h1>
-<p>For this project, our goal is to create a simulation of a fire. This
-will include an interactive part where the user can move the camera and
-adapt the fire size. This project will also entail adapting the fire
-temperature (which affects the fire color) depending on how far away a
-particular flame is from the fire center.</p>
-<p>In the following we have listed the basic features we expect to
-implement for a passing grade and the advanced features we aim to
-achieve. We have also added some extra features at the end as potential
-bonus features in case we finish our project early and aim for a grade
-between 5.5 and 6.</p>
-<h4 id="basic-features-for-passing-grade">Basic features for passing
-grade:</h4>
+<p>For this project, our goal is to create a simulation of a fire. This will include an interactive part where the user can move the camera and adapt the fire size. This project will also entail adapting the fire temperature (which affects the fire color) depending on how far away a particular flame is from the fire center.</p>
+<p>In the following we have listed the basic features we expect to implement for a passing grade and the advanced features we aim to achieve. We have also added some extra features at the end as potential bonus features in case we finish our project early and aim for a grade between 5.5 and 6.</p>
+<h4 id="basic-features-for-passing-grade">Basic features for passing grade:</h4>
 <ul>
 <li>noise function fire</li>
 <li>glowing ash particles flying out of the main fire part
 <ul>
-<li>have particles die after a certain time (to simulate ashes not
-glowing after a while)</li>
+<li>have particles die after a certain time (to simulate ashes not glowing after a while)</li>
 <li>Temperature influencing color of particles</li>
 </ul></li>
 </ul>
 <h4 id="advanced-features">Advanced features:</h4>
-<h6 id="we-would-like-to-do-the-following-advanced-features">We would
-like to do the following advanced features</h6>
+<h6 id="we-would-like-to-do-the-following-advanced-features">We would like to do the following advanced features</h6>
 <ul>
 <li><p>noise function for smoke</p></li>
 <li><p>enable moving the camera</p>
@@ -76,12 +55,7 @@ like to do the following advanced features</h6>
 <li>adapt speed of particles</li>
 </ul></li>
 </ul>
-<h6
-id="the-following-advanced-features-would-be-possibilities-if-we-finish-the-other-features-early-however-we-believe-this-is-out-of-the-scope-of-this-project-and-we-will-have-plenty-of-work-with-the-points-listed-above">The
-following advanced features would be possibilities if we finish the
-other features early <br> (however, we believe this is out of the scope
-of this project and we will have plenty of work with the points listed
-above)</h6>
+<h6 id="the-following-advanced-features-would-be-possibilities-if-we-finish-the-other-features-early-however-we-believe-this-is-out-of-the-scope-of-this-project-and-we-will-have-plenty-of-work-with-the-points-listed-above">The following advanced features would be possibilities if we finish the other features early <br> (however, we believe this is out of the scope of this project and we will have plenty of work with the points listed above)</h6>
 <ul>
 <li>add background (e.g., fire place with wood logs, etc.)
 <ul>
@@ -89,15 +63,11 @@ above)</h6>
 </ul></li>
 <li>moving the fire with the curser
 <ul>
-<li>(assuming there is no wind, otherwise this would imply using a lot
-of physics calculations?)</li>
+<li>(assuming there is no wind, otherwise this would imply using a lot of physics calculations?)</li>
 </ul></li>
 </ul>
 <h1 id="schedule">Schedule</h1>
-<p>We will all cooperate and work on the tasks together. This way we can
-minimize individual problems as much as possible and mitigate someone
-getting stuck on a bug while the others do not know much about that team
-member’s code.</p>
+<p>We will all cooperate and work on the tasks together. This way we can minimize individual problems as much as possible and mitigate someone getting stuck on a bug while the others do not know much about that team member’s code.</p>
 <h5 id="week-of-01.05.2023">Week of 01.05.2023</h5>
 <ul>
 <li>instanciate the project</li>
@@ -129,277 +99,93 @@ member’s code.</p>
 <p>Core [4.0] Particle rendering with billboards [only with WebGL]</p>
 <ul>
 <li>drawing billboards (a surface always facing the camera)</li>
-<li>simple shader of fire / smoke / cloud, based on noise (this shader
-is applied to the billboards)</li>
+<li>simple shader of fire / smoke / cloud, based on noise (this shader is applied to the billboards)</li>
 <li>particles animate over time:
 <ul>
 <li>the fire evolves / smoke dissipates etc</li>
 <li>particles move in space</li>
 <li>particles disappear after some time smoothly</li>
 </ul></li>
-<li>at least 2-3 distinct types of particles (ie fire, smoke, cloud,
-water splash, magic)</li>
+<li>at least 2-3 distinct types of particles (ie fire, smoke, cloud, water splash, magic)</li>
 <li>particles can be spawning at a constant rate</li>
 </ul>
-<p>Please cite resources used (such as tutorial/articles you find
-online, code snippets, external libraries, 3d models) so that we can
-determine what is your original contribution. Thanks!</p>
-<p>Extensions [clamped to 5.5] [+0.25] Dealing with overlap Particles
-are usually used in tight groups to create an impression of filling a
-volume. This poses a challenge since they visually overlap. One of those
-solutions might help: - Use transparency and sorting The particle shader
-is partially transparent. Then it makes a difference which particle is
-drawn on top. Particles can be sorted by position to draw the ones
-closest to the camera last. OR - Use masked shader (one with
-<code>discard</code> instruction) to create opaque particles with holes
-in them (driven by the noise). Then the depth buffer will be used to
-show whats in front.</p>
-<p>[+0.5] use instanced rendering pipeline in regl, draw a big number of
-particles All particles are drawn in a single draw call. This involves
-setting up buffers to store the particle data and updating the
-buffer.</p>
-<p>[+0.25 - +0.5] Elaborate particle spawning, [+0.25] for each spawning
-scheme Particles are created at different locations in the scene for an
-artistic effect. Examples: - small asteroids split from the main one and
-each of them has their fire trail - clusters of particles make clouds
-which move over time and animate their shape</p>
-<p>[+1 on WebGL] Bloom multi-pass rendering pipeline. Bloom is the glow
-around bright parts of the scene, it creates a very potent visual
-effect. It is achieved by running a 2nd rendering pass which blurs the
-high-brightness areas.</p>
-<p>[+1 on WebGL] Deferred shading multi-pass pipeline, allowing numerous
-small light sources. The rendering is split into two stages: - save
-depth, normals and colors of the solid parts of the scene to a buffer -
-draw the lights on top of it</p>
-<p>[+0.5] Scene composition The particle emitters are composed into a
-complete scene. There are multiple points where particles are
-spawned.</p>
-<p>[+0.5] Camera - animated camera path and target, video cinematography
-Setup several shots in your video to showcase your scene and effects.
-Move the camera along a programmed path. [+1 instead of 0.5] if camera
-paths are using Bézier curves for camera trajectory and you implement
-the formulas yourself. (Curve automatically generated, or manually
-designed for a fixed scene - if scene is gneerated you can guarantee a
-fixed scene by seeding the random number generator with a constant
-seed)</p>
+<p>Please cite resources used (such as tutorial/articles you find online, code snippets, external libraries, 3d models) so that we can determine what is your original contribution. Thanks!</p>
+<p>Extensions [clamped to 5.5] [+0.25] Dealing with overlap Particles are usually used in tight groups to create an impression of filling a volume. This poses a challenge since they visually overlap. One of those solutions might help: - Use transparency and sorting The particle shader is partially transparent. Then it makes a difference which particle is drawn on top. Particles can be sorted by position to draw the ones closest to the camera last. OR - Use masked shader (one with <code>discard</code> instruction) to create opaque particles with holes in them (driven by the noise). Then the depth buffer will be used to show whats in front.</p>
+<p>[+0.5] use instanced rendering pipeline in regl, draw a big number of particles All particles are drawn in a single draw call. This involves setting up buffers to store the particle data and updating the buffer.</p>
+<p>[+0.25 - +0.5] Elaborate particle spawning, [+0.25] for each spawning scheme Particles are created at different locations in the scene for an artistic effect. Examples: - small asteroids split from the main one and each of them has their fire trail - clusters of particles make clouds which move over time and animate their shape</p>
+<p>[+1 on WebGL] Bloom multi-pass rendering pipeline. Bloom is the glow around bright parts of the scene, it creates a very potent visual effect. It is achieved by running a 2nd rendering pass which blurs the high-brightness areas.</p>
+<p>[+1 on WebGL] Deferred shading multi-pass pipeline, allowing numerous small light sources. The rendering is split into two stages: - save depth, normals and colors of the solid parts of the scene to a buffer - draw the lights on top of it</p>
+<p>[+0.5] Scene composition The particle emitters are composed into a complete scene. There are multiple points where particles are spawned.</p>
+<p>[+0.5] Camera - animated camera path and target, video cinematography Setup several shots in your video to showcase your scene and effects. Move the camera along a programmed path. [+1 instead of 0.5] if camera paths are using Bézier curves for camera trajectory and you implement the formulas yourself. (Curve automatically generated, or manually designed for a fixed scene - if scene is gneerated you can guarantee a fixed scene by seeding the random number generator with a constant seed)</p>
 <hr />
-<p>Please let us know your thoughts! We wish you an enjoyable and
-inspiring project.</p>
-<p>If you have an implementation plan or prototype you can consult it
-with us before grading to determine if it satisfied the contract
-objective. Reply See this post in context</p>
+<p>Please let us know your thoughts! We wish you an enjoyable and inspiring project.</p>
+<p>If you have an implementation plan or prototype you can consult it with us before grading to determine if it satisfied the contract objective. Reply See this post in context</p>
 <h1 id="milestone-report">Milestone Report</h1>
 <h2 id="summary-1">Summary</h2>
-<p>We started out by having fire spawn as spherical actors that were
-grading with a gaussian function whose size decreased over time and
-disappeared over time. Also, we started with the billboarding to make
-the computation more efficient and not have to render entire spheres. We
-managed to make the billboards always look at the camera, however, when
-moving the camera around, the billboards do not always have the same
-orientation and rotate in their own plane. We have not yet been able to
-find out why this is the case.</p>
-<p>This means that, from our core tasks, we have been able to complete
-the animation of particles and their spawning and partially complete the
-billboarding, the shader, and the multiple types of particles.</p>
-<p>We started with the GL1 template since it had a lot of useful code we
-could have used like the camera rotation, or the use of actors in our
-scene for example.</p>
+<p>We started out by having fire spawn as spherical actors that were grading with a gaussian function whose size decreased over time and disappeared over time. Also, we started with the billboarding to make the computation more efficient and not have to render entire spheres. We managed to make the billboards always look at the camera, however, when moving the camera around, the billboards do not always have the same orientation and rotate in their own plane. We have not yet been able to find out why this is the case.</p>
+<p>This means that, from our core tasks, we have been able to complete the animation of particles and their spawning and partially complete the billboarding, the shader, and the multiple types of particles.</p>
+<p>We started with the GL1 template since it had a lot of useful code we could have used like the camera rotation, or the use of actors in our scene for example.</p>
 <h2 id="current-state">Current State</h2>
 <p>Our sphere implementation of the fire looked as follows:</p>
 <figure>
-<img src="images/fire_simulation_spheres.jpg" width="700"
-alt="Fire simulation with the spheres" />
-<figcaption aria-hidden="true">Fire simulation with the
-spheres</figcaption>
+<img src="images/fire_simulation_spheres.jpg" width="700" alt="Fire simulation with the spheres" /><figcaption aria-hidden="true">Fire simulation with the spheres</figcaption>
 </figure>
 <p>This is the current state of the billboard implementation</p>
 <figure>
-<img src="images/fire_billboarding_upright_squares.jpg" width="700"
-alt="Fire simulation with the billboards" />
-<figcaption aria-hidden="true">Fire simulation with the
-billboards</figcaption>
+<img src="images/fire_billboarding_upright_squares.jpg" width="700" alt="Fire simulation with the billboards" /><figcaption aria-hidden="true">Fire simulation with the billboards</figcaption>
 </figure>
-<p>When moving the camera around, the billboards change their
-orientation within their plane (which should not happen and will be
-fixed)</p>
+<p>When moving the camera around, the billboards change their orientation within their plane (which should not happen and will be fixed)</p>
 <figure>
-<img src="images/fire_billboarding_sideways_squares.png" width="700"
-alt="Problem with the sideways billboards" />
-<figcaption aria-hidden="true">Problem with the sideways
-billboards</figcaption>
+<img src="images/fire_billboarding_sideways_squares.png" width="700" alt="Problem with the sideways billboards" /><figcaption aria-hidden="true">Problem with the sideways billboards</figcaption>
 </figure>
 <h2 id="updated-schedule">Updated Schedule</h2>
-<p>In a next step, we will try to fix the billboard issue described
-above. Additionally, we will implement the bézier curve extension. We
-will also add the animation of smoke and its dissipation in our
-simulation. Lastly, we will need to enable the fire particles to look
-like particles instead of squares which we are planning to do with
-images containing black parts which should end up being see-through</p>
+<p>In a next step, we will try to fix the billboard issue described above. Additionally, we will implement the bézier curve extension. We will also add the animation of smoke and its dissipation in our simulation. Lastly, we will need to enable the fire particles to look like particles instead of squares which we are planning to do with images containing black parts which should end up being see-through</p>
 <h1 id="final-deliverables">Final Deliverables</h1>
 <h2 id="abstract">Abstract</h2>
-<p>The goal of our project was to make a fire simulation using particles
-that move and disappear after some time combined with other effects such
-as smokes particles going away from the fire, blending, billboarding,
-mesh, moving the camera, implement Bézier curves and make other sources
-of magic fire simulation !</p>
+<p>This project creates a fire simulation. For this simulation, particles spawn according to a gaussian function, adjust their size according to Bézier Curves, and dissipate after a while. Billboards are used for the particles to increase computational efficiency and noise functions combined with pictures create the texture of the particles. Using vectors representing the color, different types of firepits are rendered, such as blue or green fires. Additionally, the camera can follow predefined paths using Bézier Curves.</p>
 <h2 id="technical-approach">Technical Approach</h2>
-<h4 id="summary-of-our-technical-approach">Summary of our technical
-approach</h4>
-<p>As a starting point, we started with the GL1 and PG1 homeworks that
-we did this year due to the fact that there was already a template for
-the camera, actors and a scene we found would be good that were defined
-in GL1 and there was already nice code on noise functions in the PG1
-homework, so we thought it would make a good start for our project.</p>
-<p>First, we started with the GL1 template and modified the actors such
-that we would have a fire actor with at start the sun texture and make
-our fire simulation there at the origin of the scene.</p>
-<p>At first, it was just simple fire sphere particles using random
-gaussian noise that were already moving and disappearing over time. This
-was done using an array containing all the particles in a for loop. In
-each particle, we allocated its transformation matrix and we made a
-particle as an actor of our scene. To do so, we created an export class
-FireParticlesMovement that would compute the model_matrix and simulate
-the fire particles in the scene. We then needed to make another class
-SysRenderFireParticlesUnshaded in order to draw the actors with
-‘unshaded’ shader_type.</p>
-<p>Secondly, we tried to do some 2 triangles meshing because our partial
-fire simulation right now is making spheres which takes a lot of
-workload for the GPU, so we tried to change that in order to reduce
-significantly the workload of the GPU. To do so, we took inspiration
-from previous homeworks and created a constant rectangle which has as
-elements the vertex_positions of the triangles, the faces and the
-vertex_tex_coordinates. So we replaced those elements instead of the
-ones creating the spheres.</p>
-<p>Then, we tried to implement billbording for our particles so that
-they are always oriented towards the camera regardless of where the
-camera is. This way, our fire simulation will look good even if we look
-at it from the above or from the sides of the fire. To do so, in the
-class FireParticlesMovement we implement a new matrix called
-mat_model_to_world where we apply to it rot_axis and angle_to_camera
-matrices that we computed. So we add the camera position to the scene
-and we now calculate the model_matrix with the camera position as
-well.</p>
-<p>Also, we then implemented the blending for the fire particles to give
-them some aspect of transparency to make the fire way more realistic. To
-do so, we added a blend element in the ParticlesRenderer class so it
-produces new images. The blending is composed of an attribute alpha
-which determines the degree of transparency that we want to apply to the
-pixels. We took inspiration from this <a
-href="https://github.com/regl-project/regl/blob/master/API.md#blending">Blending
-Example</a> and we also then added an if condition in the fragment
-shader if the sum of the rgb colors is less than 1. If that is the case,
-we put alpha to 0 otherwise it equals to 1 and we use this alpha
-variable for the gl_fragColor. We then added a Gaussian filter to create
-a mask and apply it to the texture color.</p>
-<p>We then, started to add some smokes particles in the same way that we
-added fire particles previously. But the difference here is that we
-tried to do it with perlin noise functions. So we took some code and
-files from our PG1 homework and added it to our project. Then, in
-noise.frag.glsl we added a function that computes a cloud texture that
-we will use to create an image we will use to make the smoke particles.
-We also created them with triangle meshing, blending and billboarding
-and we added the smoke particles in the renderer so it is simulated in
-the scene. We also created new vertex and fragment shaders for the smoke
-to make the code cleaner and more readable that follow the same logic
-than the fire shaders. The smoke particles are using the same cloud
-texture that we saved in a smoke_buffer.</p>
-<p>We also tried to then produce more particles for one fire spot and we
-made them spread over a greater surface, same for the smoke particles.
-Moreover, we did some refactoring to make the code cleaner and more
-readable.</p>
-<p>We then added another actor for the rocks that we could place around
-the fire spot. To do so, we added a new class SysRenderRockUnshaded
-where we will collect all the objects in an array and draw them by
-running the pipeline on all the objects. We also added a mesh function
-for the rocks adn we then load the meshes in our main class and added
-the vertex and fragment shader for the rocks. At first, we used the moon
-as the texture for our rocks but we then used a darker texture which
-seems more realistic.</p>
-<p>Then, we made 4 new fire magic spots around our main realistic fire
-spot in the same logic as we did for the previous fire spot but we used
-different magic textures for the fire particles. We put them close to
-our main fire spot.</p>
-<p>Finally, we added the Bézier curve effect. The Bézier curve was
-implemented by computing the interpolating points using the
-deCasteljau’s algorithm in order to create a camera path following the
-curve automatically. The curve was also created by computing new camera
-angles and by giving a time of execution for the simulation of a curve
-and we store the computed points in a list.</p>
+<h4 id="summary-2">Summary</h4>
+<p>As a starting point, we started with the GL1 and PG1 homeworks that we did this year due to the fact that there was already a template for the camera, actors and a scene we found would be good that were defined in GL1 and there was already nice code on noise functions in the PG1 homework, so we thought it would be a good starting point for our project.</p>
+<p>First, we started with the GL1 template and modified the actors such that we would have fire actors with the sun texture overlayed and position the particle spawning center at the origin of the scene.</p>
+<p>To start simple, the fire particles were rendered using spheres and the start position was calculated using a random gaussian noise function. The particles decreased in size over time and moved away from the center. This was done using an array containing all the particles which were instanciated in a for loop. For each particle, a transformation matrix was allocated and the particle was added to the scene as an actor. The class FireParticlesMovement was created to compute the model_matrix and simulate the fire particles in the scene. The class SysRenderFireParticlesUnshaded is responsible for drawing the actors with ‘unshaded’ shader_type.</p>
+<p>To increase the computation efficience, billboards were used. These were constructed out of 2 triangle meshes. Then, the fire particles were projected on them. This change was based on a billboarding homework from a previous year. To make sure the billboards are always oriented towards the camera, a matrix computation was added in FireParticlesMovement to correct the orientation of the billboards. To enable this computation, the camera position had to be added to the scene to have access to it in this class.</p>
+<p>Additionally, make the fire simulation more realistic, blending of the particles was implemented. This results in particles becoming brighter if there are multiple ones behind each other. To do so, blending has been added in the ParticlesRenderer class to apply this change. The blending is composed of an attribute alpha which determines the degree of transparency that is applied to the pixels. The blending is based on the following resource: <a href="https://github.com/regl-project/regl/blob/master/API.md#blending">Blending Example</a>.</p>
+<p>Also, to not ensure that black parts of the particles are not drawn, an if condition has been added in the fragment shader to ensure that pixels would not be drawn if the sum of their rgb colors was less than 0.1. Additionally, to change the bilboards to a round shape, a Gaussian filter has been added to create a mask and apply it to the texture where, again, pixels could then be discarded.</p>
+<p>Smoke particles were added in a very similar way to the fire particles. Perlin noise functions were used to create their texture. This was based on the PG1 homework. For that, in noise.frag.glsl a function that computes a cloud texture was added. This texture is stored in a buffer that is used to create the smoke particles’ texture. Also for the smoke particles billboarding was used.</p>
+<p>To make the scene more interesting, rocks were placed around the firepit. These rock meshes were downloaded from the <a href="https://www.turbosquid.com/3d-models/3d-short-flat-rocks-1909649">internet</a> and adapted and combined in Blender. These rocks are rendered thanks to the class SysRenderRockUnshaded where, the rocks were loaded from the .obj files and rendered in the scene. At first, the color of the rocks was created using the moon as texture but this was changed to a darker texture found <a href="https://www.shutterstock.com/image-photo/black-stone-concrete-texture-background-anthracite-1617633904">online</a> and then adapted to make the simulation more realistic.</p>
+<p>Then, 4 new magic colored fire spots were added around the main realistic fire spot following the same procedure as the main fire pit but using different magic textures for the fire particles.</p>
+<p>Finally, using Bézier curves, the camera’s movement could, in addition to the manual movement, be moved automatically. The Bézier curve was implemented by computing the interpolation of points using the deCasteljau’s algorithm in order to create a camera path following the curve automatically. The curve was also created by computing new camera angles and by giving a time of execution for the simulation of a curve.</p>
 <h4 id="description-of-problems">Description of problems</h4>
-<p>Our first problem was that our camera eye wasn’t pointing towards the
-origin of the scene where the fire simulation was displayed. To do so,
-we just created a camera_focus_translation_mat and multiplied it with
-mat_view and mat_turnable.</p>
-<p>Our second problem was with the billboarding, the particles were
-successfully always looking at the camera but they sometimes are
-rotating around themselves. We didn’t find a way to solve this problem
-but we can’t really see the problem with all the other particles and
-effects that we added later.</p>
-<p>Our third problem wa for the blending. We were not sure what
-parameters we should put for the dstAlpha attribute in the render as
-there was multiple possibilities. So we tried them all and decided that
-the choice ‘one minus src alpha’ was the one giving us the most decent
-result in our project.</p>
-<p>Our fourth problem was with the perlin noise function for the cloud
-texture. The texture was only on the top right corner of the image, so
-the smoke particles weren’t looking good since there was a lot of black
-parts. To solve this problem, we just discarded the region of the image
-texture where the color was black.</p>
+<p>Our first problem was that our camera eye wasn’t pointing towards the origin of the scene where the fire simulation was displayed. To fix this, we created a camera_focus_translation_mat and multiplied it with mat_view and mat_turnable.</p>
+<p>Our second problem was with the billboarding, the particles were successfully always looking at the camera but they would not have the same side looking up at all times but rotating around themselves. As discussed with the assistants, however, we left this problem out. Also, since our textures now are no longer squares, it is almost not noticible.</p>
+<p>Our third problem was for the blending. We were not sure what parameters we should put for the dstAlpha attribute in the render as there was multiple possibilities. So we tried them all and decided that the choice ‘one minus src alpha’ was the one giving us the best result in our project.</p>
+<p>Our fourth problem was with the perlin noise function for the cloud texture. The texture was only on the top right corner of the image, so the smoke particles weren’t looking good since there was a lot of black parts. To solve this problem, we just discarded the region of the image texture where the color was black and adapted the noise function to create the clouds in the middle of the buffer.</p>
 <h1 id="result">Result</h1>
 <figure>
-<img src="images/final_result.png" width="700" alt="Our final result" />
-<figcaption aria-hidden="true">Our final result</figcaption>
+<img src="images/final_result.png" width="700" alt="Final result of the fire simulation" /><figcaption aria-hidden="true">Final result of the fire simulation</figcaption>
 </figure>
 <h1 id="zip-of-the-project">Zip of the project</h1>
-<p>The zip archive of the sources files for the project is in the
-folder, feel free to check it out !</p>
-<h1 id="contribution-from-each-team-member">Contribution from each team
-member</h1>
+<p>The zip archive of the sources files for the project is in the folder, feel free to check it out !</p>
+<h1 id="contribution-from-each-team-member">Contribution from each team member</h1>
 <ul>
-<li><p>Luca Engel :</p></li>
-<li><p>Ahmad Jarrar :</p></li>
-<li><p>Antoine Garin : 0.25 for the contribution</p>
-<ul>
-<li>Helped with the start and creation of the project, bringing starting
-ideas for the concept of the project, made the reports, created the
-videos, started the perlin noise part and helped overall during the
-exercise sessions.</li>
-</ul></li>
+<li><p>Luca Engel : 0.35</p></li>
+<li><p>Ahmad Jarrar : 0.40</p></li>
+<li><p>Antoine Garin : 0.25</p></li>
 </ul>
 <h1 id="resources">Resources</h1>
-<p>Here are some links that we found could be useful for our project
-:</p>
+<p>Here are some links that we found to be useful for our project :</p>
 <ul>
-<li><a
-href="http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/">OpenGL
-tutorial for the particles</a></li>
-<li><a
-href="https://www.chinedufn.com/webgl-particle-effect-billboard-tutorial/">Particle
-effects via Billboards</a></li>
-<li><a
-href="https://webglfundamentals.org/webgl/lessons/webgl-qna-efficient-particle-system-in-javascript---webgl-.html">WebGL
-fundamentals for writing particles in javascript</a></li>
-<li><a
-href="https://groups.csail.mit.edu/graphics/classes/6.837/F99/projects/reports/team09.pdf">Some
-project report from MIT students</a></li>
-<li><a href="https://www.shadertoy.com/view/lsdBD2">A fire effet
-simulation using GLSL</a></li>
-<li><a href="https://learnopengl.com/Advanced-OpenGL/Blending">Blending
-Tutorial</a></li>
-<li><a
-href="https://github.com/regl-project/regl/blob/master/API.md#blending">Blending
-Example</a></li>
-<li><a
-href="https://www.turbosquid.com/3d-models/3d-short-flat-rocks-1909649">Mesh
-used and adapted for rocks</a></li>
-<li><a
-href="https://www.shutterstock.com/image-photo/black-stone-concrete-texture-background-anthracite-1617633904">Texture
-used and adapted for the rocks</a></li>
-<li><a
-href="https://www.shutterstock.com/image-vector/abstract-green-blue-blurred-gradient-background-561604051">Texture
-used for the green_magic</a></li>
+<li><a href="http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/">OpenGL tutorial for the particles</a></li>
+<li><a href="https://www.chinedufn.com/webgl-particle-effect-billboard-tutorial/">Particle effects via Billboards</a></li>
+<li><a href="https://webglfundamentals.org/webgl/lessons/webgl-qna-efficient-particle-system-in-javascript---webgl-.html">WebGL fundamentals for writing particles in javascript</a></li>
+<li><a href="https://groups.csail.mit.edu/graphics/classes/6.837/F99/projects/reports/team09.pdf">Some project report from MIT students</a></li>
+<li><a href="https://www.shadertoy.com/view/lsdBD2">A fire effet simulation using GLSL</a></li>
+<li><a href="https://learnopengl.com/Advanced-OpenGL/Blending">Blending Tutorial</a></li>
+<li><a href="https://github.com/regl-project/regl/blob/master/API.md#blending">Blending Example</a></li>
+<li><a href="https://www.turbosquid.com/3d-models/3d-short-flat-rocks-1909649">Mesh used and adapted for rocks</a></li>
+<li><a href="https://www.shutterstock.com/image-photo/black-stone-concrete-texture-background-anthracite-1617633904">Texture used and adapted for the rocks</a></li>
+<li><a href="https://www.shutterstock.com/image-vector/abstract-green-blue-blurred-gradient-background-561604051">Texture used for the green_magic</a></li>
 </ul>
-<h1 id="file-containing-all-our-original-code">File containing all our
-original code</h1>
+<h1 id="file-containing-all-our-original-code">File containing all our original code</h1>
 </body>
 </html>
