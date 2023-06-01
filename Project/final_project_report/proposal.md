@@ -188,7 +188,10 @@ Also, to not ensure that black parts of the particles are not drawn, an if condi
 
 Smoke particles were added in a very similar way to the fire particles. Perlin noise functions were used to create their texture. This was based on the PG1 homework. For that, in noise.frag.glsl a function that computes a cloud texture was added. This texture is stored in a buffer that is used to create the smoke particles' texture. Also for the smoke particles billboarding was used.
 
+
 To make the scene more interesting, rocks were placed around the firepit. These rock meshes were downloaded from the [internet](https://www.turbosquid.com/3d-models/3d-short-flat-rocks-1909649) and adapted and combined in Blender. These rocks are rendered thanks to the class SysRenderRockUnshaded where, the rocks were loaded from the .obj files and rendered in the scene. At first, the color of the rocks was created using the moon as texture but this was changed to a darker texture found [online](https://www.shutterstock.com/image-photo/black-stone-concrete-texture-background-anthracite-1617633904) and then adapted to make the simulation more realistic.
+
+![Rock meshes in the blender file](images/rock_textures.png){width="700px"}
 
 Then, 4 new magic colored fire spots were added around the main realistic fire spot following the same procedure as the main fire pit but using different magic textures for the fire particles.
 
@@ -203,7 +206,23 @@ Our second problem was with the billboarding, the particles were successfully al
 
 Our third problem was for the blending. We were not sure what parameters we should put for the dstAlpha attribute in the render as there was multiple possibilities. So we tried them all and decided that the choice 'one minus src alpha' was the one giving us the best result in our project.
 
-Our fourth problem was with the perlin noise function for the cloud texture. The texture was only on the top right corner of the image, so the smoke particles weren't looking good since there was a lot of black parts. To solve this problem, we just discarded the region of the image texture where the color was black and adapted the noise function to create the clouds in the middle of the buffer.
+Our fourth problem was the order in which the particles were drawn. By drawing particles in the back after drawing particles closer to the camera, the rendered fire had some darker elements where it should be bright (thanks to the blending). To fix this, we sorted the particles by distance to the camera before rendering them.
+
+![Result without sorting](images/fire_not_sorted.png){height="300px"}
+
+![Result with sorting](images/fire_sorted.png){height="300px"}
+
+
+Our fifth problem was with the perlin noise function for the cloud texture. The texture was only on the top right corner of the image, so the smoke particles weren't looking good since there was a lot of black parts. To solve this problem, we just discarded the region of the image texture where the color was black and adapted the noise function to create the clouds in the middle of the buffer.
+
+Our sixth problem was that we also needed to blend the rocks of the firepit with the fire to also enable smooth transitions between particles and the rocks. To do this, we drew the rocks before the particles.
+
+![Result when drawing rocks after the particles (e.g., the smoke particle at the left does not have a smooth transition)](images/particles_and_rocks_not_blending_because_the_rocks_are_drawn_last.png){height="300px"}
+
+![Result with drawing rocks before the particles](images/particles_and_rocks_blending_because_the_rocks_are_drawn_first.png){height="300px"}
+
+
+
 
 
 # Result
