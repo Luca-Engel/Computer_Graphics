@@ -421,3 +421,430 @@
         }
     }
 ```
+
+# utils.js
+```
+    export function calculateBezierPoint(points, t) {
+        const n = points.length - 1;
+
+        // Recursive function for de Casteljau's algorithm
+        function deCasteljau(points, t) {
+            if (points.length === 1) {
+                return points[0]; // Base case: single point
+            }
+
+            const interpolatedPoints = [];
+            for (let i = 0; i < points.length - 1; i++) {
+                const pointA = points[i];
+                const pointB = points[i + 1];
+                const interpolatedPoint = {
+                    x: pointA.x * (1 - t) + pointB.x * t,
+                    y: pointA.y * (1 - t) + pointB.y * t,
+                    z: pointA.z * (1 - t) + pointB.z * t,
+                };
+                interpolatedPoints.push(interpolatedPoint);
+            }
+
+            return deCasteljau(interpolatedPoints, t); // Recursive call
+        }
+
+        return deCasteljau(points, t);
+    }
+
+
+
+    export function convertToTurntableParameters(position) {
+        let { x, y, z } = position;
+        x = -x
+        // Calculate the camera distance factor
+        const camera_distance_factor = Math.sqrt(x * x + y * y + z * z);
+
+        // Calculate the angle_y
+        let angle_y = - Math.atan2(z, Math.sqrt(x * x + y * y));
+
+        // Adjust the sign of angle_y when it exceeds 90 degrees or goes below -90 degrees
+        // if (angle_y > Math.PI / 2) {
+        //     angle_y -= Math.PI;
+        // } else if (angle_y < -Math.PI / 2) {
+        //     angle_y += Math.PI;
+        // }
+
+        // Calculate the angle_z
+        const angle_z = Math.atan2(y, x);
+
+        return { camera_distance_factor, angle_y, angle_z };
+    }
+
+
+    export function cameraPath1(t) {
+
+        const time_to_complete = 20
+
+        // Manually make sure curves are connected (start point is same as end point to avoid jumps)
+        const curves = [
+            [
+                { x: 0.5, y: 0, z: 0.2 },
+                { x: 0.5, y: 0.6, z: 0.2 },
+                { x: 0, y: 0.6, z: -0.3 },
+                { x: -0.5, y: 0.6, z: 0.2 },
+                { x: -0.5, y: 0, z: 0.2 },
+            ],
+            [
+                { x: -0.5, y: 0, z: 0.2 },
+                { x: -0.5, y: -0.3, z: 0.2 },
+                { x: 0, y: -0.3, z: -0 },
+                { x: 0.5, y: -0.3, z: 0.2 },
+                { x: 0.5, y: 0, z: 0.2 },
+            ]
+        ]
+        let t_ = t % time_to_complete;
+
+        let time_for_one_curve = time_to_complete / curves.length
+
+        let i = Math.min(Math.floor(t_ / (time_for_one_curve)), curves.length - 1)
+        let selected_curve_points = curves[i]
+
+        return calculateBezierPoint(selected_curve_points, (t_ % time_for_one_curve) / time_for_one_curve)
+
+    }
+
+    export function pointsAsList(points) {
+        let result = []
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i];
+            result.push([point.x, point.y, point.z])
+        }
+        return result
+    }
+```
+
+# main_fire.js
+```
+
+
+	// load meshes
+	const meshes_to_load = [
+		"rocks.obj"
+	]
+	for(const mesh_name of meshes_to_load) {
+		resource_promises[mesh_name] = icg_mesh_load_obj(`./meshes/${mesh_name}`)
+	}
+
+
+	for(const mesh_name of meshes_to_load) {
+		resources[mesh_name] = mesh_preprocess(regl, resources[mesh_name])
+	}
+
+
+	// mesh rendering:
+	const sys_render_rocks_unshaded = new SysRenderRocksUnshaded(regl, resources)
+
+
+    sys_render_rocks_unshaded.render(frame_info, scene_info)
+
+	// Rotate camera position by dragging with the mouse
+	canvas_elem.addEventListener('mousemove', (event) => {
+		if (manual_on) {
+			// if left or middle button is pressed
+			if (event.buttons & 1 || event.buttons & 4) {
+				frame_info.cam_angle_z += event.movementX * 0.005
+				frame_info.cam_angle_y += -event.movementY * 0.005
+
+				update_cam_transform(frame_info)
+			}
+		}
+
+	})
+
+	canvas_elem.addEventListener('wheel', (event) => {
+		if (manual_on) {
+			// scroll wheel to zoom in or out
+			const factor_mul_base = 1.08
+			const factor_mul = (event.deltaY > 0) ? factor_mul_base : 1. / factor_mul_base
+			frame_info.cam_distance_factor *= factor_mul
+			frame_info.cam_distance_factor = Math.max(0.02, Math.min(frame_info.cam_distance_factor, 4))
+			update_cam_transform(frame_info)
+		}
+    })
+
+    /*---------------------------------------------------------------
+		Render loop
+	---------------------------------------------------------------*/
+	let fixedPoint = { x: 0.5, y: 0, z: -0.5 }
+
+
+	let prev_regl_time = 0
+	let time_elapsed = 0
+	let frames_counted = 0
+	let fps = 0
+
+	regl.frame((frame) => {
+
+		const dt = frame.time - prev_regl_time
+		time_elapsed += dt
+		frames_counted += 1
+
+		if (time_elapsed > 1.0) {
+			fps = frames_counted
+			frames_counted = 0
+			time_elapsed = 0
+		}
+
+		if (!is_paused) {
+			scene_info.sim_time += dt
+		}
+
+		if (!manual_on) {
+			let movingPoint = cameraPath1(scene_info.sim_time)
+
+
+			const { mat_view, mat_projection, mat_turntable } = frame_info
+
+			let position = convertToTurntableParameters(movingPoint)
+			frame_info.cam_angle_z = position.angle_z
+			frame_info.cam_angle_y = position.angle_y
+			frame_info.cam_distance_factor = position.camera_distance_factor
+
+			update_cam_transform(frame_info)
+		}
+
+        // More code below...
+    })
+```
+
+# path.js
+```
+    import { mat4_matmul_many } from "./icg_math.js"
+    import { vec2, vec3, vec4, mat3, mat4 } from "../lib/gl-matrix_3.3.0/esm/index.js"
+
+    import { calculateBezierPoint, cameraPath1, convertToTurntableParameters, pointsAsList } from "./utils.js"
+
+    export class PathRenderer {
+        constructor(regl, resources) {
+            let curvePoints = []
+            for (let i = 0.; i < 120; i += 0.1) {
+
+                curvePoints.push(cameraPath1(i))
+            }
+            curvePoints = pointsAsList(curvePoints)
+
+            curvePoints.push(curvePoints[0])
+
+            this.pipeline = regl({
+                frag: `
+                precision mediump float;
+                void main() {
+                    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red color
+                }
+            `,
+
+                vert: `
+                precision mediump float;
+                attribute vec3 position;
+                uniform mat4 mat_mvp;
+            void main() {
+                gl_Position = mat_mvp * vec4(position, 1.0);
+            }
+    `,
+
+                attributes: {
+                    position: regl.buffer(curvePoints)
+                },
+
+                uniforms: {
+                    mat_mvp: regl.prop('mat_mvp'),
+                },
+
+                count: curvePoints.length,
+
+                primitive: 'line strip'
+            })
+        }
+
+        render(frame_info, scene_info) {
+            const { mat_projection, mat_view } = frame_info
+            const mat_mvp = mat4.create()
+            this.pipeline({ mat_mvp: mat4_matmul_many(mat_mvp, mat_projection, mat_view,), })
+        }
+    }
+```
+
+# icg_mesh.js
+```
+    export async function icg_mesh_load_obj(url, material_colors_by_name) {
+        const obj_data = await load_text(url)
+        const mesh_loaded_obj = new Mesh(obj_data)
+
+        const faces_from_materials = [].concat(...mesh_loaded_obj.indicesPerMaterial)
+
+        let vertex_colors = null;
+
+        if(material_colors_by_name) {
+            const material_colors_by_index = mesh_loaded_obj.materialNames.map((name) => {
+                let color = material_colors_by_name[name];
+                if (color === undefined) {
+                    console.warn(`Missing color for material ${name} in mesh ${url}`);
+                    color = [1., 0., 1.];
+                }
+                return color;
+            })
+
+            vertex_colors = [].concat(mesh_loaded_obj.vertexMaterialIndices.map((mat_idx) => material_colors_by_index[mat_idx]))
+            vertex_colors = regl_instance.buffer(vertex_colors)
+        }
+
+
+        // Transfer the data into GPU buffers
+        // It is not necessary to do so (regl can deal with normal arrays),
+        // but this way we make sure its transferred only once and not on every draw.
+        const mesh_with_our_names = {
+            vertex_positions: mesh_loaded_obj.vertices,
+            vertex_tex_coords: mesh_loaded_obj.textures,
+            vertex_normals: mesh_loaded_obj.vertexNormals,
+            vertex_color: vertex_colors,
+
+            // https://github.com/regl-project/regl/blob/master/API.md#elements
+            faces: faces_from_materials,
+
+            lib_obj: mesh_loaded_obj,
+        }
+
+        return mesh_with_our_names
+    }
+```
+
+# noise.frag.glsl
+```
+    // Procedural "cloud" texture
+    vec4 tex_cloud(vec2 point) {
+        vec2 half_vector = vec2(0., 0.); //vec2(0.5, 0.5);
+        vec2 updated_point = point - half_vector;
+        float d = dot(updated_point, updated_point);
+        float g = 2. * exp(-3. * d) - 1.;
+        float noise = g + 0.5 * perlin_fbm(point * 2.);
+        
+        float alpha = 1.;
+        if (noise < 0.1)
+            alpha = 0.;
+        else if (noise < 0.3) {
+            alpha = noise;
+        }
+
+        return vec4(noise, noise, noise, alpha);
+    }
+    vec4 tex_cloud_color(vec2 point) {
+        vec2 half_vector = vec2(0., 0.); //vec2(0.5, 0.5);
+        vec2 updated_point = point - half_vector;
+        float d = dot(updated_point, updated_point);
+        float g = 2. * exp(-3. * d) - 1.;
+        float noise = g + 0.5 * perlin_fbm(point * 2.);
+
+        float alpha = 1.;
+        if (noise < 0.2)
+            alpha = 0.;
+        else if (noise < 0.3) {
+            alpha = noise;
+        }
+
+        return vec4(noise, noise*0.65, noise*0.2, alpha);
+    }
+```
+
+# stones_unshaded.frag.glsl
+```
+    precision mediump float;
+
+    varying vec2 v2f_tex_coord;
+
+    uniform sampler2D texture_base_color;
+
+    void main()
+    {
+        vec3 color_from_texture = texture2D(texture_base_color, v2f_tex_coord).rgb;
+        gl_FragColor = vec4(color_from_texture, 1.); // output: RGBA in 0..1 range
+    }
+```
+
+# fire_particle.frag.glsl
+```
+    precision mediump float;
+            
+    varying vec2 v2f_tex_coord;
+
+    uniform vec4 texture_color;
+    uniform bool is_smoke_particle;
+    uniform sampler2D smoke_tex_buffer;
+
+
+    float gaussian(float x, float sigma) {
+        return exp(-0.5 * x * x / (sigma * sigma));
+    }
+
+    void main()
+    {	
+        // We use a different texture for smoke particles than for fire particles
+        vec4 texture = texture2D(smoke_tex_buffer, v2f_tex_coord);
+        
+        // vec4 solid_color = vec4(0.95, 0.51, 0.22, 1.0);
+
+        float alpha = 1.0;
+
+        float sigma = 0.2; // Adjust this for desired blurriness
+        float strength = 1.0; // Adjust this for desired strength
+        float mask = gaussian(v2f_tex_coord.x - 0.5, sigma) * gaussian(v2f_tex_coord.y - 0.5, sigma);
+
+        if (mask < 0.2)
+            discard;
+
+        // Apply the Gaussian mask to the texture color
+        // vec4 resultColor = color_from_texture * vec4(vec3(mask * strength), 1.0);
+        // gl_FragColor = color_from_texture;
+
+
+        if (texture.r + texture.g + texture.b < 0.1) {
+            discard;
+        }
+
+
+        gl_FragColor = texture * texture_color; //solid_color;
+        
+    }
+```
+
+# buffer_to_screen.frag.glsl
+```
+    precision highp float;
+    uniform sampler2D buffer_to_draw;
+    varying vec2 v2f_tex_coords;
+
+    void main() {
+        gl_FragColor = vec4(texture2D(buffer_to_draw, v2f_tex_coords).rgb, 1.0);
+    }
+```
+
+# buffer_to_screen.vert.glsl
+```
+    attribute vec2 position;
+    varying vec2 v2f_tex_coords;
+
+    void main() {
+        // webGL screen coords are -1 ... 1 but texture sampling is in range 0 ... 1
+        v2f_tex_coords = (position + 1.) * 0.5;
+        gl_Position = vec4(position, 0.0, 1.0);
+    }
+```
+
+# stones_unshaded.frag.glsl
+```
+    precision mediump float;
+            
+    varying vec2 v2f_tex_coord;
+
+    uniform sampler2D texture_base_color;
+
+    void main()
+    {
+        vec3 color_from_texture = texture2D(texture_base_color, v2f_tex_coord).rgb;
+        gl_FragColor = vec4(color_from_texture, 1.); // output: RGBA in 0..1 range
+    }
+```
