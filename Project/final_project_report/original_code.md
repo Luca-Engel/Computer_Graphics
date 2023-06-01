@@ -58,19 +58,16 @@
                 lifetime: 2 * Math.random(),
                 size: size_,
 
-                // TODO: Tune particle starting position using perline noise etc
                 start_position: vec3.fromValues(
                     offset_x + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 2,
                     offset_y + (diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 2,
                     (0.1 + diameterAroundCenter * Math.random() - halfDiameterAroundCenter) / 10,
                 ),
 
-                // TODO: Tune particle movement direction using perline noise etc
                 velocity_x: (0.025 * Math.random() - 0.0125) / (size_ * 50),
                 velocity_y: (0.025 * Math.random() - 0.0125) / (size_ * 50),
                 velocity_z: (0.07 * Math.random()) / (size_ * 50),
 
-                // TODO: Change Texture here, change to flame texture, can also give an array of textures
                 texture_name: texture_color,
                 shader_type: "fire_particle",
             }
@@ -162,7 +159,6 @@
             let M_translate = mat4.create();
             let M_rotate = mat4.create();
 
-            // TODO: Add billboarding transform here
             const vec_to_camera = vec3.normalize([0, 0, 0], camera_position);
             const normal = vec3.fromValues(0, 1, 0);
             const rot_axis = vec3.cross([0, 0, 0], normal, vec_to_camera);
@@ -189,7 +185,6 @@
             // Store the combined transform in particle.mat_model_to_world
             mat4_matmul_many(particle.mat_model_to_world, M_translate, M_scale, M_rotate)
 
-            // TODO: can also select active texture (if multiple) based on lifetime
         }
 
         simulate(scene_info, camera_position) {
@@ -240,7 +235,6 @@
             // Create a list of noise textures for the smoke:
             const noise_textures = init_noise(regl, resources);
 
-            // TODO: pick the correct texture out of the list of textures...
             const smoke_texture = noise_textures[0];
             // const fire_texture = noise_textures[1];
 
@@ -265,7 +259,6 @@
                     smoke_tex_buffer: this.smoke_tex_buffer,
                 },
 
-                // TODO: check if blending is good or if parameters need adjusting
                 // https://learnopengl.com/Advanced-OpenGL/Blending
                 // https://github.com/regl-project/regl/blob/master/API.md#blending
                 // this adds background color to the texture --> lots of fire --> brighter
@@ -313,7 +306,7 @@
             });
 
             // For each particle, construct information needed to draw it using the pipeline
-            for (const particle of particles) { //scene_info.fire_particles) {
+            for (const particle of particles) {
 
                 // Choose only planet using this shader
                 if (particle.shader_type === 'fire_particle') {
@@ -408,17 +401,13 @@
             // Read frame info
             const { mat_projection, mat_view } = frame_info
 
-            // For each planet, construct information needed to draw it using the pipeline
+
             for (const actor of scene_info.actors) {
 
-                // Choose only planet using this shader
+
                 if (actor.shader_type === 'unshaded') {
 
                     const mat_mvp = mat4.create()
-
-                    // #TODO GL1.2.1.2
-                    // Calculate mat_mvp: model-view-projection matrix	
-                    //mat4_matmul_many(mat_mvp, ...)
 
                     entries_to_draw.push({
                         mat_mvp: mat4_matmul_many(mat_mvp, mat_projection, mat_view, actor.mat_model_to_world),
