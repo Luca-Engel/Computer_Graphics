@@ -56,13 +56,14 @@ Our sixth problem was that we also needed to blend the rocks of the firepit with
 | ![Result without sorting](images/particles_and_rocks_not_blending_because_the_rocks_are_drawn_last.png){height="400px"} | ![Result with sorting](images/particles_and_rocks_blending_because_the_rocks_are_drawn_first.png){height="400px"} |
 
 # Result
-In the following, the results of this project are presented.
+In the following, the results of this project are presented. You can find the video of this simulation [here.](https://drive.google.com/file/d/1nv01i-_LBP0dGE9w3LMWFoOMRij2_zeJ/view)
+You can also play with the live demo here:
+
+![Interactive fire simulation](../fire/index_fire.html){width="1000px" height="600px"}
+
 
 ![Snapshot of the fire simulation](images/final_result.png){width="700px"}
 
-![Fire Simulation](images/ICG%20Project%2060fps.mp4){width="700px"}
-
-You can also play with the live demo [here.](../fire/index_fire.html)
 
 # Contribution from each team member
 
