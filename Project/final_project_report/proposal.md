@@ -2,16 +2,16 @@
 # Project Report
 
 ## Abstract
-This project creates a fire simulation. For this simulation, particles spawn according to a gaussian function, adjust their size according to Bézier Curves, and dissipate after a while. Billboards are used for the particles to increase computational efficiency and noise functions combined with pictures create the texture of the particles. Using vectors representing the color, different types of firepits are rendered, such as blue or green fires. Additionally, the camera can follow predefined paths using Bézier Curves.
+The goal of this project was to create a fire simulation. For this simulation, particles spawn according to a gaussian function, adjust their size according to Bézier Curves, and dissipate after a while. Billboards are used for the particles to increase computational efficiency and noise functions combined with pictures create the texture of the particles. Using vectors representing the color, different types of firepits are rendered, such as blue or green fires. Additionally, the camera can follow predefined paths using Bézier Curves.
 
 ## Technical Approach
 
 #### Summary
-As a starting point, we started with the GL1 and PG1 homeworks that we did this year due to the fact that there was already a template for the camera, actors and a scene we found would be good that were defined in GL1 and there was already nice code on noise functions in the PG1 homework, so we thought it would be a good starting point for our project.
+As a starting point, the GL1 and PG1 homeworks were taken as a skeleton due to the fact that there was already a template for the camera, actors and a scene defined in GL1 and there was already existing code for noise functions in the PG1 homework.
 
-First, we started with the GL1 template and modified the actors such that we would have fire actors with the sun texture overlayed and position the particle spawning center at the origin of the scene.
+First, in the GL1 template, the actors were modified to create fire actors with the sun texture overlayed. The particles were adapted to spawn around the origin of the scene according to a Gaussian distribution.
 
-To start simple, the fire particles were rendered using spheres and the start position was calculated using a random gaussian noise function. The particles decreased in size over time and moved away from the center. This was done using an array containing all the particles which were instanciated in a for loop. For each particle, a transformation matrix was allocated and the particle was added to the scene as an actor. The class FireParticlesMovement was created to compute the model_matrix and simulate the fire particles in the scene. The class SysRenderFireParticlesUnshaded is responsible for drawing the actors with 'unshaded' shader_type.
+At the beginning, the fire particles were rendered using spheres. Over time, the particles decreased in size and moved away from the center. For each particle, a transformation matrix was allocated and the particle was added to the scene as an actor. The class FireParticlesMovement was created to compute the model_matrix and simulate the fire particles in the scene. The class SysRenderFireParticlesUnshaded is responsible for drawing the actors with 'unshaded' shader_type.
 
 To increase the computation efficience, billboards were used. These were constructed out of 2 triangle meshes. Then, the fire particles were projected on them. This change was based on a billboarding homework from a previous year. To make sure the billboards are always oriented towards the camera, a matrix computation was added in FireParticlesMovement to correct the orientation of the billboards. To enable this computation, the camera position had to be added to the scene to have access to it in this class.
 
@@ -55,14 +55,13 @@ Our sixth problem was that we also needed to blend the rocks of the firepit with
 ![Result with drawing rocks before the particles](images/particles_and_rocks_blending_because_the_rocks_are_drawn_first.png){height="300px"}
 
 
-
-
-
 # Result
-In the following, the results of this project are presented.
+In the following, the results of this project are presented. The video of the fire simulation can be found 
+[here.](https://drive.google.com/file/d/1nv01i-_LBP0dGE9w3LMWFoOMRij2_zeJ/view)
+
 ![Snapshot of the fire simulation](images/final_result.png){width="700px"}
 
-![Fire simulation](images/ICG%20Project%2060fps.mp4){width="700px"}
+
 
 # Zip of the project
 The zip archive of the sources files for the project can be found the folder.
@@ -91,6 +90,3 @@ Here are some links that we found to be useful for our project :
 - [Mesh used and adapted for rocks](https://www.turbosquid.com/3d-models/3d-short-flat-rocks-1909649)
 - [Texture used and adapted for the rocks](https://www.shutterstock.com/image-photo/black-stone-concrete-texture-background-anthracite-1617633904)
 - [Texture used for the green_magic](https://www.shutterstock.com/image-vector/abstract-green-blue-blurred-gradient-background-561604051)
-
-
-# File containing all our original code
