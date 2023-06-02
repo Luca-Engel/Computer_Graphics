@@ -62,6 +62,8 @@ In the following, the results of this project are presented.
 
 ![Fire Simulation](images/ICG%20Project%2060fps.mp4){width="700px"}
 
+You can also play with the live demo [here.](../fire/index_fire.html)
+
 # Contribution from each team member
 
 - Luca Engel : 0.35
