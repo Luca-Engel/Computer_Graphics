@@ -1,2 +1,2 @@
-proposal.html: proposal.md
-	pandoc -s --css=icg_report.css proposal.md -o proposal.html
+project_report.html: project_report.md
+	pandoc -s --css=icg_report.css project_report.md -o project_report.html
