@@ -55,6 +55,8 @@ Our sixth problem was that we also needed to blend the rocks of the firepit with
 | --- | --- |
 | ![Result without sorting](images/particles_and_rocks_not_blending_because_the_rocks_are_drawn_last.png){height="400px"} | ![Result with sorting](images/particles_and_rocks_blending_because_the_rocks_are_drawn_first.png){height="400px"} |
 
+One of the problem with bezier camera paths was that we had parameterized and drawn curves using cartesian coordinates in the world space. but the camera accepted parameters in terms of distance from origin and angles. So we had to convert cartesian coordinates to distance and angle so that the camera can follow the coorect path. This lead to easy adjustment to camera paths as we could manipulate curves using control points and camera always followed the same path.
+
 # Result
 In the following, the results of this project are presented. You can find the video of this simulation [here.](https://drive.google.com/file/d/1nv01i-_LBP0dGE9w3LMWFoOMRij2_zeJ/view)
 You can also play with the live demo here:
