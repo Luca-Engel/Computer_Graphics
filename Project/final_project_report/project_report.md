@@ -17,43 +17,41 @@ To increase the computational efficiency, billboards were used. These were const
 
 Additionally, to make the fire simulation more realistic, blending of the particles was implemented. This results in particles becoming brighter if there are multiple ones behind each other. To do so, blending has been added in the ParticlesRenderer class. This addition is based on the following [resource](https://github.com/regl-project/regl/blob/master/API.md#blending). 
 
-Also, to not ensure that black parts of the particles are not drawn, an if condition has been added in the fragment shader to ensure that pixels would not be drawn if the sum of their rgb colors was less than 0.1. Additionally, to change the bilboards to a round shape, a Gaussian filter has been added to create a mask and apply it to the texture where, again, pixels could then be discarded.
+Also, to ensure that black parts of the particles are not drawn, an if condition has been added in the fragment shader to ensure that pixels would not be drawn if the sum of their rgb colors was less than 0.1. Additionally, to change the particles to a round shape, a Gaussian filter has been added to create a mask and apply it to the texture where, again, pixels could then be discarded. That way, not the entire billboard was drawn which would have resulted in square particles.
 
-Smoke particles were added in a very similar way to the fire particles. Perlin noise functions were used to create their texture. This was based on the PG1 homework. For that, in noise.frag.glsl a function that computes a cloud texture was added. This texture is stored in a buffer that is used to create the smoke particles' texture. Also for the smoke particles billboarding was used.
+Smoke particles were added in a very similar way to the fire particles. Perlin noise functions were used to create their texture. This was based on the PG1 homework. For that, in noise.frag.glsl a function that computes a cloud texture was added. This texture is stored in a buffer that is used to create the smoke particles' textures. The smoke particles are also rendered using billboards.
 
-
-To make the scene more interesting, rocks were placed around the firepit. These rock meshes were downloaded from the [internet](https://www.turbosquid.com/3d-models/3d-short-flat-rocks-1909649) and adapted and combined in Blender. These rocks are rendered thanks to the class SysRenderRockUnshaded where, the rocks were loaded from the .obj files and rendered in the scene. At first, the color of the rocks was created using the moon as texture but this was changed to a darker texture found [online](https://www.shutterstock.com/image-photo/black-stone-concrete-texture-background-anthracite-1617633904) and then adapted to make the simulation more realistic.
+To make the scene more interesting and realistic, rocks were placed around the firepit. These rock meshes were downloaded from the following [resource](https://www.turbosquid.com/3d-models/3d-short-flat-rocks-1909649) and adapted and combined in Blender. These rocks are rendered thanks to the class SysRenderRockUnshaded where the rocks were loaded from the ".obj" files and rendered in the scene. At first, the color of the rocks was created using the moon as texture but this was changed to a darker texture found [here](https://www.shutterstock.com/image-photo/black-stone-concrete-texture-background-anthracite-1617633904) that was adapted to make the simulation more realistic.
 
 ![Rock meshes in the blender file](images/rock_textures.png){width="700px"}
 
 Then, 4 new magic colored fire spots were added around the main realistic fire spot following the same procedure as the main fire pit but using different magic textures for the fire particles.
 
-Finally, using Bézier curves, the camera's movement could, in addition to the manual movement, be moved automatically. The Bézier curve was implemented by computing the interpolation of points using the deCasteljau's algorithm in order to create a camera path following the curve automatically. The curve was also created by computing new camera angles and by giving a time of execution for the simulation of a curve.
-
+Finally, in addition to the manual movement, the camera's movement could be moved automatically using Bézier curves. The Bézier curves were implemented by computing the interpolation of points using the deCasteljau's algorithm in order to create a camera path following the curve automatically. The curve was also created by computing new camera angles and by giving a time of execution for the simulation of a curve.
 
 
 #### Description of problems
-Our first problem was that our camera eye wasn't pointing towards the origin of the scene where the fire simulation was displayed. To fix this, we created a camera_focus_translation_mat and multiplied it with mat_view and mat_turnable.
+Our first problem was that our camera eye wasn't pointing towards the origin of the scene where the fire simulation was displayed. To fix this, we created a camera_focus_translation_mat and multiplied it with mat_view and mat_turnable to ensure it would.
 
-Our second problem was with the billboarding, the particles were successfully always looking at the camera but they would not have the same side looking up at all times but rotating around themselves. As discussed with the assistants, however, we left this problem out. Also, since our textures now are no longer squares, it is almost not noticible.
+Our second problem was the billboarding. The particles were successfully always facing the camera but they did not have the same orientation at all times. When moving around with the camera, the billboards would rotate in their axis. As discussed with the assistants, however, we left this problem out. Also, since our textures now are no longer squares, it is almost not noticible in the simulation.
 
-Our third problem was for the blending. We were not sure what parameters we should put for the dstAlpha attribute in the render as there was multiple possibilities. So we tried them all and decided that the choice 'one minus src alpha' was the one giving us the best result in our project.
+Our third problem concerned the particle blending. We were not sure what parameters were best for the dstAlpha attribute in the render function as there are multiple possibilities. After trying them out, however, we decided that the choice 'one minus src alpha' was the one with the best result.
 
-Our fourth problem was the order in which the particles were drawn. By drawing particles in the back after drawing particles closer to the camera, the rendered fire had some darker elements where it should be bright (thanks to the blending). To fix this, we sorted the particles by distance to the camera before rendering them.
+Our fourth problem was the order in which the particles were drawn. By drawing particles in the back after drawing particles closer to the camera, the rendered fire had some darker elements where it should be bright since the particles in the back had not been blended but were drawn on top of the particles closer to the camera. To fix this, we sorted the particles by distance to the camera before rendering them. In the following, this difference is illustrated:
 
-![Result without sorting](images/fire_not_sorted.png){height="300px"}
+| Result without sorting | Result with sorting |
+| --- | --- |
+| ![Result without sorting](images/fire_not_sorted.png){height="400px"} | ![Result with sorting](images/fire_sorted.png){height="400px"} |
 
-![Result with sorting](images/fire_sorted.png){height="300px"}
 
 
 Our fifth problem was with the perlin noise function for the cloud texture. The texture was only on the top right corner of the image, so the smoke particles weren't looking good since there was a lot of black parts. To solve this problem, we just discarded the region of the image texture where the color was black and adapted the noise function to create the clouds in the middle of the buffer.
 
-Our sixth problem was that we also needed to blend the rocks of the firepit with the fire to also enable smooth transitions between particles and the rocks. To do this, we drew the rocks before the particles.
+Our sixth problem was that we also needed to blend the rocks of the firepit with the fire to also enable smooth transitions between particles and the rocks. To do this, we drew the rocks before the particles. In the following example, the smoke particle above the rocks on the left is not blended with the rocks. Therefore, the particle does not have a smooth transition at the edge.
 
-![Result when drawing rocks after the particles (e.g., the smoke particle at the left does not have a smooth transition)](images/particles_and_rocks_not_blending_because_the_rocks_are_drawn_last.png){height="300px"}
-
-![Result with drawing rocks before the particles](images/particles_and_rocks_blending_because_the_rocks_are_drawn_first.png){height="300px"}
-
+| Result when drawing rocks after the particles | Result when drawing rocks before the particles |
+| --- | --- |
+| ![Result without sorting](images/particles_and_rocks_not_blending_because_the_rocks_are_drawn_last.png){height="400px"} | ![Result with sorting](images/particles_and_rocks_blending_because_the_rocks_are_drawn_first.png){height="400px"} |
 
 # Result
 In the following, the results of this project are presented. The video of the fire simulation can be found 
