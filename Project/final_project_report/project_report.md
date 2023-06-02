@@ -83,6 +83,7 @@ You can also play with the live demo here:
     - bézier curves for particle size adjustment
     - bézier curves for camera movement
     - help write and adapt project report
+    - video recording for the demo
     - work on exercises in the exercise sessions
 
 - Antoine Garin : 0.25
