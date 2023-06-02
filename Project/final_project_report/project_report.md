@@ -68,10 +68,25 @@ You can also play with the live demo here:
 # Contribution from each team member
 
 - Luca Engel : 0.35
+    - perlin noise for the particles
+    - billboarding for particles
+    - add particle blending
+    - smoke particles displaying and rendering
+    - blender part for the rocks
+    - texture for the rocks
+    - add multiple firepits to the simulation
+    - help write and adapt project report
+    - work on exercises in the exercise sessions
 
 - Ahmad Jarrar : 0.40
+    - spherical fire particle simulation at beginning
+    - bézier curves for particle size adjustment
+    - bézier curves for camera movement
+    - help write and adapt project report
+    - work on exercises in the exercise sessions
 
 - Antoine Garin : 0.25
+    - Helped with the start and creation of the project, bringing starting ideas for the concept of the project, made the reports, created the videos, started the perlin noise part and helped overall during the exercise sessions.
 
 
 
