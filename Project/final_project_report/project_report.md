@@ -1,5 +1,7 @@
 
 # Project Report
+![Fire simulation with normal and magic fire](images/final_result.png){width="700px"}
+
 
 ## Abstract
 The goal of this project was to create a fire simulation. For this simulation, particles spawn according to a gaussian function, adjust their size according to Bézier Curves, and dissipate after a while. Billboards are used for the particles to increase computational efficiency and noise functions combined with pictures create the texture of the particles. Using vectors representing the color, different types of firepits are rendered, such as blue or green fires. Additionally, the camera can follow predefined paths using Bézier Curves.
@@ -59,11 +61,6 @@ In the following, the results of this project are presented.
 ![Snapshot of the fire simulation](images/final_result.png){width="700px"}
 
 ![Fire Simulation](images/ICG%20Project%2060fps.mp4){width="700px"}
-
-
-
-# Zip of the project
-The zip archive of the sources files for the project can be found the folder.
 
 # Contribution from each team member
 
